@@ -1143,6 +1143,32 @@ async function buyPlan() {
       totalBal: CU.totalBal
     });
     
+    // Give referral commission to referrer when user buys plan (after deposit approval)
+    if (CU.referredBy && CU.refCommissionEligible && !CU.refCommissionGiven) {
+      try {
+        const users = await getAllUsersAsync();
+        const refUser = users.find(r => r.refCode === CU.referredBy);
+        if (refUser) {
+          const comm = Math.floor(selPlan.invest * .10); // 10% of plan investment
+          const refCurBal = (refUser.curBal || 0) + comm;
+          const refTotalBal = (refUser.depBal || 0) + refCurBal;
+          const refEarnings = (refUser.refEarnings || 0) + comm;
+          
+          await updateUserDataAsync(refUser.uid, {
+            curBal: refCurBal,
+            totalBal: refTotalBal,
+            refEarnings: refEarnings
+          });
+          
+          // Mark commission as given for this user
+          await updateUserDataAsync(CU.uid, { refCommissionGiven: true });
+          CU.refCommissionGiven = true;
+        }
+      } catch (e) {
+        console.error('Error giving referral commission:', e);
+      }
+    }
+    
     hideLoading();
     closeModal();
     showToast(selPlan.name + ' activated! 🎉', 'ok');
@@ -1607,21 +1633,10 @@ async function approveDep(id) {
         totalBal: newTotalBal
       });
       
-      // Add referral commission
-      if (u.referredBy) {
-        const refUser = users.find(r => r.refCode === u.referredBy);
-        if (refUser) {
-          const comm = Math.floor(dep.amount * .10);
-          const refCurBal = (refUser.curBal || 0) + comm;
-          const refTotalBal = (refUser.depBal || 0) + refCurBal;
-          const refEarnings = (refUser.refEarnings || 0) + comm;
-          
-          await updateUserDataAsync(refUser.uid, {
-            curBal: refCurBal,
-            totalBal: refTotalBal,
-            refEarnings: refEarnings
-          });
-        }
+      // Mark user as eligible for referral commission (deposit approved)
+      // Commission will be given when user buys a plan
+      if (u.referredBy && !u.refCommissionEligible) {
+        await updateUserDataAsync(u.uid, { refCommissionEligible: true });
       }
     }
     
