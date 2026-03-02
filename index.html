@@ -6,12 +6,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>Elite Profit Zone</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-<!-- Firebase SDK - Non-module version for better compatibility -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height:100vh;overflow-x:hidden}
@@ -37,9 +35,10 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
 .ig label{display:block;font-size:11px;color:#90a4ae;margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
 .iw{position:relative}
 .iw .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:16px;color:#546e7a;pointer-events:none}
-.iw input,.iw select{width:100%;padding:13px 13px 13px 40px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:12px;color:#e8eaf6;font-size:14px;font-family:'Nunito',sans-serif;transition:border-color .25s,box-shadow .25s;outline:none;appearance:none;-webkit-appearance:none}
-.iw input:focus,.iw select:focus{border-color:#e91e8c;box-shadow:0 0 0 3px rgba(233,30,140,.14)}
-.iw input::placeholder{color:rgba(255,255,255,.2)}
+.iw input,.iw select,.iw textarea{width:100%;padding:13px 13px 13px 40px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:12px;color:#e8eaf6;font-size:14px;font-family:'Nunito',sans-serif;transition:border-color .25s,box-shadow .25s;outline:none;appearance:none;-webkit-appearance:none}
+.iw textarea{padding-left:13px;min-height:80px;resize:none}
+.iw input:focus,.iw select:focus,.iw textarea:focus{border-color:#e91e8c;box-shadow:0 0 0 3px rgba(233,30,140,.14)}
+.iw input::placeholder,.iw textarea::placeholder{color:rgba(255,255,255,.2)}
 .iw select option{background:#0f1629;color:#e8eaf6}
 .btn-p{width:100%;padding:15px;border:none;border-radius:14px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:.8px;background:linear-gradient(135deg,#e91e8c,#ff1744);color:#fff;box-shadow:0 8px 24px rgba(233,30,140,.38);transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
 .btn-p:active{transform:scale(.97)}
@@ -121,6 +120,8 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
 .warn-box{background:rgba(255,152,0,.07);border:1px solid rgba(255,152,0,.2);border-radius:12px;padding:13px;margin-bottom:15px}
 .warn-box p{font-size:13px;color:#ff9800;line-height:1.65}
 .warn-box strong{color:#fff}
+.success-box{background:rgba(0,200,83,.07);border:1px solid rgba(0,200,83,.2);border-radius:12px;padding:13px;margin-bottom:15px}
+.success-box p{font-size:13px;color:#00c853;line-height:1.65}
 .hi{margin:0 15px 9px;background:#1a2340;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:13px;display:flex;align-items:center;gap:11px}
 .hi-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
 .hi-info h4{font-size:13px;font-weight:700}
@@ -192,20 +193,87 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
 .spinner{width:50px;height:50px;border:3px solid rgba(233,30,140,.2);border-top-color:#e91e8c;border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{margin-top:15px;color:#90a4ae;font-size:14px}
+.team-card{margin:0 15px 12px;background:#1a2340;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:15px;display:flex;align-items:center;gap:12px}
+.team-av{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#e91e8c,#1565c0);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
+.team-info{flex:1}
+.team-info h4{font-size:14px;font-weight:700}
+.team-info p{font-size:11px;color:#90a4ae;margin-top:2px}
+.team-status{padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700}
+.team-status.active{background:rgba(0,200,83,.13);color:#00c853}
+.team-status.inactive{background:rgba(255,152,0,.13);color:#ff9800}
+.team-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 15px 15px}
+.team-stat{background:#1a2340;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:15px;text-align:center}
+.team-stat .val{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#e91e8c}
+.team-stat .lbl{font-size:10px;color:#90a4ae;text-transform:uppercase;margin-top:3px}
+.myplan-card{margin:0 15px 12px;border-radius:16px;overflow:hidden;position:relative}
+.myplan-header{padding:15px;display:flex;align-items:center;gap:10px}
+.myplan-header .icon{font-size:24px}
+.myplan-header .info{flex:1}
+.myplan-header .info h4{font-size:15px;font-weight:700}
+.myplan-header .info p{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.myplan-body{background:rgba(0,0,0,.2);padding:15px}
+.myplan-row{display:flex;justify-content:space-between;margin-bottom:8px}
+.myplan-row:last-child{margin-bottom:0}
+.myplan-row span:first-child{font-size:12px;color:#90a4ae}
+.myplan-row span:last-child{font-size:13px;font-weight:700}
+.success-modal{text-align:center;padding:20px 10px}
+.success-modal .icon{font-size:60px;margin-bottom:15px}
+.success-modal h3{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:#00c853;margin-bottom:10px}
+.success-modal p{font-size:14px;color:#90a4ae;margin-bottom:20px}
+.admin-filter{display:flex;gap:8px;margin:0 15px 15px;flex-wrap:wrap}
+.filter-btn{padding:8px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:#1a2340;color:#90a4ae;transition:all .2s}
+.filter-btn.active{background:linear-gradient(135deg,#e91e8c,#ff1744);color:#fff}
+.user-detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.user-detail-row:last-child{border-bottom:none}
+.user-detail-row span:first-child{font-size:12px;color:#90a4ae}
+.user-detail-row span:last-child{font-size:13px;font-weight:700;word-break:break-all}
+
+/* Chat Styles */
+.chat-container{display:flex;flex-direction:column;height:calc(100vh - 140px);background:#0f1629;border-radius:16px;margin:0 15px;overflow:hidden}
+.chat-header{display:flex;align-items:center;gap:12px;padding:15px;background:linear-gradient(135deg,#1a0035,#0d1b4e);border-bottom:1px solid rgba(255,255,255,.07)}
+.chat-header-av{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #e91e8c}
+.chat-header-info{flex:1}
+.chat-header-info h4{font-size:16px;font-weight:700}
+.chat-header-info p{font-size:12px;color:#90a4ae}
+.chat-status{display:flex;align-items:center;gap:5px;font-size:11px;color:#00c853}
+.chat-status::before{content:'';width:8px;height:8px;background:#00c853;border-radius:50%;animation:pulse-dot 1.5s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.5}}
+.chat-messages{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:12px}
+.chat-message{max-width:80%;padding:12px 15px;border-radius:16px;font-size:14px;line-height:1.5;word-wrap:break-word}
+.chat-message.user{align-self:flex-end;background:linear-gradient(135deg,#e91e8c,#ff1744);color:#fff;border-bottom-right-radius:4px}
+.chat-message.admin{align-self:flex-start;background:#1a2340;border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px}
+.chat-message img{max-width:100%;border-radius:8px;margin-top:8px}
+.chat-message-time{font-size:10px;color:rgba(255,255,255,.5);margin-top:5px;text-align:right}
+.chat-input-area{padding:15px;background:#1a2340;border-top:1px solid rgba(255,255,255,.07)}
+.chat-input-wrap{display:flex;gap:10px;align-items:flex-end}
+.chat-input{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:12px 15px;color:#fff;font-size:14px;outline:none;resize:none;min-height:44px;max-height:100px;font-family:'Nunito',sans-serif}
+.chat-input:focus{border-color:#e91e8c}
+.chat-actions{display:flex;gap:8px}
+.chat-btn{width:44px;height:44px;border-radius:50%;border:none;background:linear-gradient(135deg,#e91e8c,#ff1744);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.chat-btn:disabled{opacity:.5;cursor:not-allowed}
+.chat-btn.secondary{background:#1a2340;border:1px solid rgba(255,255,255,.1)}
+.chat-image-preview{position:relative;margin-bottom:10px}
+.chat-image-preview img{max-height:100px;border-radius:8px}
+.chat-image-preview .remove-btn{position:absolute;top:-8px;right:-8px;width:24px;height:24px;background:#f44336;border:none;border-radius:50%;color:#fff;font-size:14px;cursor:pointer}
+.chat-list{margin:0 15px}
+.chat-item{display:flex;align-items:center;gap:12px;padding:15px;background:#1a2340;border:1px solid rgba(255,255,255,.07);border-radius:16px;margin-bottom:10px;cursor:pointer;transition:transform .15s}
+.chat-item:active{transform:scale(.98)}
+.chat-item-av{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#e91e8c,#1565c0);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0}
+.chat-item-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.chat-item-info{flex:1;min-width:0}
+.chat-item-info h4{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-item-info p{font-size:12px;color:#90a4ae;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-item-badge{min-width:20px;height:20px;background:#e91e8c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.chat-item-time{font-size:11px;color:#546e7a}
+.chat-empty{text-align:center;padding:60px 20px;color:#546e7a}
+.chat-empty-icon{font-size:60px;margin-bottom:15px}
+.chat-empty h4{font-size:18px;margin-bottom:10px;color:#e8eaf6}
+.chat-empty p{font-size:14px}
 </style>
 </head>
 <body>
-
-<div class="loading-overlay" id="loading-overlay">
-  <div class="spinner"></div>
-  <div class="loading-text">Please wait...</div>
-</div>
-
+<div class="loading-overlay" id="loading-overlay"><div class="spinner"></div><div class="loading-text">Please wait...</div></div>
 <div class="toast" id="toast"></div>
-
-<!-- ══════════════════════════════════════════
-     SCREEN: LOGIN
-══════════════════════════════════════════ -->
 <div class="screen active" id="S-login">
 <div class="auth-wrap">
   <div class="bubble b1"></div><div class="bubble b2"></div><div class="bubble b3"></div>
@@ -218,15 +286,11 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
     <h2>Welcome Back 👋</h2>
     <div class="ig">
       <label>Email Address</label>
-      <div class="iw"><span class="ic">📧</span>
-        <input type="email" id="l-email" placeholder="Enter your email" autocomplete="email">
-      </div>
+      <div class="iw"><span class="ic">📧</span><input type="email" id="l-email" placeholder="Enter your email" autocomplete="email"></div>
     </div>
     <div class="ig">
       <label>Password</label>
-      <div class="iw"><span class="ic">🔒</span>
-        <input type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password">
-      </div>
+      <div class="iw"><span class="ic">🔒</span><input type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password"></div>
     </div>
     <div class="fgt"><a onclick="go('S-forgot')">Forgot Password?</a></div>
     <button class="btn-p" id="login-btn" onclick="doLogin()">🚀 Sign In</button>
@@ -235,9 +299,6 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
 </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SCREEN: REGISTER
-══════════════════════════════════════════ -->
 <div class="screen" id="S-register">
 <div class="auth-wrap">
   <div class="bubble b1"></div><div class="bubble b2"></div><div class="bubble b3"></div>
@@ -259,9 +320,6 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
 </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SCREEN: FORGOT PASSWORD
-══════════════════════════════════════════ -->
 <div class="screen" id="S-forgot">
 <div class="auth-wrap">
   <div class="bubble b1"></div><div class="bubble b2"></div><div class="bubble b3"></div>
@@ -279,20 +337,13 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
 </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     SCREEN: USER APP
-══════════════════════════════════════════ -->
 <div class="screen" id="S-app">
 <div class="app-wrap">
-
-  <!-- PAGE: DASHBOARD -->
   <div id="P-dashboard" class="page-content">
     <div class="tbar">
       <div><div class="tbar-sub">Elite Profit Zone</div><div class="tbar-title">Dashboard</div></div>
       <div style="display:flex;gap:8px">
-        <a href="https://whatsapp.com/channel/0029Vb7PFe98V0tw1OADlX1r" target="_blank">
-          <button class="icon-btn" style="background:linear-gradient(135deg,#25D366,#128C7E)">💬</button>
-        </a>
+        <a href="https://whatsapp.com/channel/0029Vb7PFe98V0tw1OADlX1r" target="_blank"><button class="icon-btn" style="background:linear-gradient(135deg,#25D366,#128C7E)">💬</button></a>
         <button class="icon-btn" onclick="showToast('No new notifications','inf')">🔔</button>
       </div>
     </div>
@@ -309,15 +360,17 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
       <div class="sc" style="--ac:rgba(255,215,0,.18)"><span class="si">📅</span><div class="sv" id="d-daily">0 PKR</div><div class="sl">Daily Earn</div></div>
       <div class="sc" style="--ac:rgba(0,176,255,.18)"><span class="si">📊</span><div class="sv" id="d-ref-earn">0 PKR</div><div class="sl">Ref Comm</div></div>
       <div class="sc" style="--ac:rgba(128,0,255,.18)"><span class="si">👥</span><div class="sv" id="d-refs">0</div><div class="sl">Total Refs</div></div>
-      <div class="sc" style="--ac:rgba(255,87,34,.18)"><span class="si">⏳</span><div class="sv" id="d-expiry">—</div><div class="sl">Plan Expiry</div></div>
+      <div class="sc" style="--ac:rgba(255,87,34,.18)"><span class="si">📈</span><div class="sv" id="d-plans">0</div><div class="sl">Active Plans</div></div>
     </div>
     <div class="st"><h3>Quick Actions</h3></div>
     <div class="qgrid">
       <div class="qi" onclick="nav('deposit')"><div class="qi-ico" style="background:linear-gradient(135deg,rgba(0,200,83,.25),rgba(0,80,30,.25))">💳</div><div class="qi-lbl">Deposit</div></div>
       <div class="qi" onclick="nav('withdraw')"><div class="qi-ico" style="background:linear-gradient(135deg,rgba(233,30,140,.25),rgba(80,0,30,.25))">💸</div><div class="qi-lbl">Withdraw</div></div>
       <div class="qi" onclick="nav('plans')"><div class="qi-ico" style="background:linear-gradient(135deg,rgba(255,215,0,.25),rgba(80,60,0,.25))">📈</div><div class="qi-lbl">Plans</div></div>
-      <div class="qi" onclick="nav('referral')"><div class="qi-ico" style="background:linear-gradient(135deg,rgba(0,176,255,.25),rgba(0,50,80,.25))">🔗</div><div class="qi-lbl">Refer</div></div>
+      <div class="qi" onclick="nav('support')"><div class="qi-ico" style="background:linear-gradient(135deg,rgba(233,30,140,.25),rgba(156,39,176,.25))">🎧</div><div class="qi-lbl">Support</div></div>
     </div>
+    <div class="st"><h3>My Active Plans</h3><a onclick="nav('myplans')">View All →</a></div>
+    <div id="d-plans-prev"></div>
     <div class="st"><h3>Today's Tasks</h3><a onclick="nav('tasks')">View All →</a></div>
     <div id="d-tasks-prev"></div>
     <div style="margin:0 15px 15px">
@@ -331,17 +384,21 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
     </div>
   </div>
 
-  <!-- PAGE: PLANS -->
   <div id="P-plans" class="page-content" style="display:none">
     <div class="tbar"><button class="icon-btn" onclick="nav('dashboard')">←</button><div class="tbar-title">Investment Plans</div><div style="width:38px"></div></div>
-    <div style="padding:0 15px 14px"><div class="info-box"><p>📌 Plans activate after deposit approval. Duration: <strong>45 Days</strong>. No earning after expiry.</p></div></div>
+    <div style="padding:0 15px 14px"><div class="info-box"><p>📌 Plans activate after deposit approval. Duration: <strong>45 Days</strong>. You can purchase multiple plans!</p></div></div>
     <div id="plans-list"></div>
   </div>
 
-  <!-- PAGE: TASKS -->
+  <div id="P-myplans" class="page-content" style="display:none">
+    <div class="tbar"><button class="icon-btn" onclick="nav('dashboard')">←</button><div class="tbar-title">My Plans</div><div style="width:38px"></div></div>
+    <div style="padding:0 15px 14px"><div class="info-box"><p>📌 View all your active and expired plans here.</p></div></div>
+    <div id="myplans-list"></div>
+  </div>
+
   <div id="P-tasks" class="page-content" style="display:none">
     <div class="tbar"><button class="icon-btn" onclick="nav('dashboard')">←</button><div class="tbar-title">Daily Tasks</div><div style="width:38px"></div></div>
-    <div style="padding:0 15px 14px"><div class="info-box"><p>✅ Complete all tasks to earn your daily reward. Tasks reset every <strong>24 hours</strong>.</p></div></div>
+    <div style="padding:0 15px 14px"><div class="info-box"><p>✅ Complete all tasks to earn your daily reward. Tasks reset every day at <strong>12:00 AM</strong>!</p></div></div>
     <div class="prog-wrap">
       <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#90a4ae">Daily Progress</span><span id="t-prog-txt" style="font-weight:700;color:#e91e8c">0/0</span></div>
       <div class="prog-bar"><div class="prog-fill" id="t-prog-bar" style="width:0%"></div></div>
@@ -349,7 +406,58 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
     <div id="tasks-list"></div>
   </div>
 
-  <!-- PAGE: DEPOSIT -->
+  <div id="P-team" class="page-content" style="display:none">
+    <div class="tbar"><button class="icon-btn" onclick="nav('dashboard')">←</button><div class="tbar-title">My Team</div><div style="width:38px"></div></div>
+    <div class="team-stats">
+      <div class="team-stat"><div class="val" id="team-total">0</div><div class="lbl">Total Members</div></div>
+      <div class="team-stat"><div class="val" id="team-active">0</div><div class="lbl">Active Members</div></div>
+      <div class="team-stat"><div class="val" id="team-earnings">0</div><div class="lbl">Total Earnings</div></div>
+    </div>
+    <div class="ref-card">
+      <div style="font-size:12px;color:#90a4ae">Your Referral Code</div>
+      <div class="ref-code" id="team-ref-code">EPZ000</div>
+      <div style="display:flex;gap:9px;justify-content:center">
+        <button class="ref-copy" onclick="copyCode()">📋 Copy Code</button>
+        <button class="ref-copy" onclick="copyLink()" style="background:rgba(0,176,255,.15);color:#00b0ff">🔗 Copy Link</button>
+      </div>
+    </div>
+    <div class="st"><h3>Team Members</h3></div>
+    <div id="team-list"></div>
+  </div>
+
+  <div id="P-support" class="page-content" style="display:none">
+    <div class="tbar"><button class="icon-btn" onclick="nav('dashboard')">←</button><div class="tbar-title">Customer Support</div><div style="width:38px"></div></div>
+    <div class="chat-container">
+      <div class="chat-header">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face" class="chat-header-av" alt="Support Agent">
+        <div class="chat-header-info">
+          <h4>Sarah - Support Team</h4>
+          <div class="chat-status">Online</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-message admin">
+          <div>👋 Hello! Welcome to Elite Profit Zone. How can I help you today?</div>
+          <div class="chat-message-time">Just now</div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <div id="image-preview" class="chat-image-preview" style="display:none">
+          <img id="preview-img" src="" alt="Preview">
+          <button class="remove-btn" onclick="removeImage()">×</button>
+        </div>
+        <div class="chat-input-wrap">
+          <textarea class="chat-input" id="chat-message-input" placeholder="Type your message..." rows="1"></textarea>
+          <div class="chat-actions">
+            <input type="file" id="chat-image-input" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
+            <button class="chat-btn secondary" onclick="document.getElementById('chat-image-input').click()">📷</button>
+            <button class="chat-btn" onclick="sendMessage()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="P-deposit" class="page-content" style="display:none">
     <div class="tbar"><button class="icon-btn" onclick="nav('dashboard')">←</button><div class="tbar-title">Deposit Funds</div><div style="width:38px"></div></div>
     <div class="fc">
@@ -364,7 +472,6 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
     <div id="dep-hist"></div>
   </div>
 
-  <!-- PAGE: WITHDRAW -->
   <div id="P-withdraw" class="page-content" style="display:none">
     <div class="tbar"><button class="icon-btn" onclick="nav('dashboard')">←</button><div class="tbar-title">Withdraw Funds</div><div style="width:38px"></div></div>
     <div class="fc">
@@ -385,7 +492,6 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
     <div id="with-hist"></div>
   </div>
 
-  <!-- PAGE: REFERRAL -->
   <div id="P-referral" class="page-content" style="display:none">
     <div class="tbar"><button class="icon-btn" onclick="nav('dashboard')">←</button><div class="tbar-title">Referral System</div><div style="width:38px"></div></div>
     <div class="ref-card">
@@ -422,7 +528,6 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
     </div>
   </div>
 
-  <!-- PAGE: PROFILE -->
   <div id="P-profile" class="page-content" style="display:none">
     <div class="tbar"><div class="tbar-title">Profile</div><button class="icon-btn" onclick="doLogout()" style="background:rgba(244,67,54,.12);color:#f44336">🚪</button></div>
     <div class="prof-hero">
@@ -431,32 +536,29 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
       <div class="prof-email" id="pr-email">—</div>
     </div>
     <div style="margin:0 15px 15px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="asc"><div class="av" id="pr-plan" style="font-size:14px;font-family:'Nunito',sans-serif">None</div><div class="al">Active Plan</div></div>
+      <div class="asc"><div class="av" id="pr-plan" style="font-size:14px;font-family:'Nunito',sans-serif">None</div><div class="al">Active Plans</div></div>
       <div class="asc"><div class="av" id="pr-bal">0</div><div class="al">Balance PKR</div></div>
     </div>
     <div class="st"><h3>Account</h3></div>
     <div class="mi" onclick="nav('deposit')"><div class="mi-ico" style="background:rgba(0,200,83,.15)">💳</div><div class="mi-info"><h4>Deposit Funds</h4><p>Add money to your account</p></div><div class="mi-arrow">›</div></div>
     <div class="mi" onclick="nav('withdraw')"><div class="mi-ico" style="background:rgba(233,30,140,.15)">💸</div><div class="mi-info"><h4>Withdraw Funds</h4><p>Transfer to your account</p></div><div class="mi-arrow">›</div></div>
     <div class="mi" onclick="nav('plans')"><div class="mi-ico" style="background:rgba(255,215,0,.15)">📈</div><div class="mi-info"><h4>Investment Plans</h4><p>Browse available plans</p></div><div class="mi-arrow">›</div></div>
-    <div class="mi" onclick="nav('referral')"><div class="mi-ico" style="background:rgba(0,176,255,.15)">🔗</div><div class="mi-info"><h4>Referral Program</h4><p>Earn by inviting friends</p></div><div class="mi-arrow">›</div></div>
+    <div class="mi" onclick="nav('myplans')"><div class="mi-ico" style="background:rgba(156,39,176,.15)">📋</div><div class="mi-info"><h4>My Plans</h4><p>View your active plans</p></div><div class="mi-arrow">›</div></div>
+    <div class="mi" onclick="nav('team')"><div class="mi-ico" style="background:rgba(0,176,255,.15)">👥</div><div class="mi-info"><h4>My Team</h4><p>View your referrals</p></div><div class="mi-arrow">›</div></div>
+    <div class="mi" onclick="nav('support')"><div class="mi-ico" style="background:rgba(233,30,140,.15)">🎧</div><div class="mi-info"><h4>Customer Support</h4><p>Chat with our support team</p></div><div class="mi-arrow">›</div></div>
+    <div class="mi" onclick="nav('referral')"><div class="mi-ico" style="background:rgba(255,87,34,.15)">🔗</div><div class="mi-info"><h4>Referral Program</h4><p>Earn by inviting friends</p></div><div class="mi-arrow">›</div></div>
     <div class="mi" onclick="doLogout()"><div class="mi-ico" style="background:rgba(244,67,54,.15)">🚪</div><div class="mi-info"><h4>Logout</h4><p>Sign out of your account</p></div><div class="mi-arrow">›</div></div>
   </div>
 
-  <!-- BOTTOM NAV -->
   <div class="bnav">
     <div class="ni on" id="ni-dashboard" onclick="nav('dashboard')"><div class="ni-i">🏠</div><div class="ni-l">Home</div></div>
     <div class="ni" id="ni-plans" onclick="nav('plans')"><div class="ni-i">📈</div><div class="ni-l">Plans</div></div>
     <div class="ni" id="ni-tasks" onclick="nav('tasks')"><div class="ni-i">✅</div><div class="ni-l">Tasks</div></div>
-    <div class="ni" id="ni-referral" onclick="nav('referral')"><div class="ni-i">👥</div><div class="ni-l">Refer</div></div>
+    <div class="ni" id="ni-team" onclick="nav('team')"><div class="ni-i">👥</div><div class="ni-l">Team</div></div>
     <div class="ni" id="ni-profile" onclick="nav('profile')"><div class="ni-i">👤</div><div class="ni-l">Profile</div></div>
   </div>
-
 </div>
 </div>
-
-<!-- ══════════════════════════════════════════
-     SCREEN: ADMIN (100% Separate)
-══════════════════════════════════════════ -->
 <div class="screen" id="S-admin">
 <div class="admin-wrap">
   <div class="admin-tbar">
@@ -471,6 +573,7 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
       <button class="tab on" id="atab-overview" onclick="adminTab('overview')">📊 Overview</button>
       <button class="tab" id="atab-deposits" onclick="adminTab('deposits')">💳 Deposits</button>
       <button class="tab" id="atab-withdrawals" onclick="adminTab('withdrawals')">💸 Withdraw</button>
+      <button class="tab" id="atab-support" onclick="adminTab('support')">🎧 Support</button>
       <button class="tab" id="atab-users" onclick="adminTab('users')">👥 Users</button>
     </div>
   </div>
@@ -481,12 +584,23 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
     </div>
     <div id="A-deposits" style="display:none;padding-top:14px"><div class="st"><h3>💳 Deposit Requests</h3></div><div id="A-deps-list"></div></div>
     <div id="A-withdrawals" style="display:none;padding-top:14px"><div class="st"><h3>💸 Withdrawal Requests</h3></div><div id="A-withs-list"></div></div>
-    <div id="A-users" style="display:none;padding-top:14px"><div class="st"><h3>👥 All Users</h3></div><div id="A-users-list"></div></div>
+    <div id="A-support" style="display:none;padding-top:14px">
+      <div class="st"><h3>🎧 Customer Support Chats</h3></div>
+      <div id="A-support-list" class="chat-list"></div>
+    </div>
+    <div id="A-users" style="display:none;padding-top:14px">
+      <div class="st"><h3>👥 All Users</h3></div>
+      <div class="admin-filter">
+        <button class="filter-btn active" onclick="filterUsers('all')" id="filter-all">All Users</button>
+        <button class="filter-btn" onclick="filterUsers('active')" id="filter-active">Active Plans</button>
+        <button class="filter-btn" onclick="filterUsers('blocked')" id="filter-blocked">Blocked</button>
+      </div>
+      <div id="A-users-list"></div>
+    </div>
   </div>
 </div>
 </div>
 
-<!-- PLAN MODAL -->
 <div class="modal-ov" id="plan-modal">
   <div class="modal-box">
     <div class="mh"></div>
@@ -497,1370 +611,148 @@ body{font-family:'Nunito',sans-serif;background:#0a0e1a;color:#e8eaf6;min-height
   </div>
 </div>
 
-<script>
-// ═══════════════════════════════════════════════════════════
-// ═══ FIREBASE CONFIGURATION & INITIALIZATION ═══
-// ═══════════════════════════════════════════════════════════
-
-// Firebase Config
-const firebaseConfig = {
-  apiKey: "AIzaSyBQdWr6FFQKBJgItP-AIcNCxnKktMFMq-A",
-  authDomain: "elite-profit-zone-35b8b.firebaseapp.com",
-  databaseURL: "https://elite-profit-zone-35b8b-default-rtdb.firebaseio.com",
-  projectId: "elite-profit-zone-35b8b",
-  storageBucket: "elite-profit-zone-35b8b.firebasestorage.app",
-  messagingSenderId: "967472600974",
-  appId: "1:967472600974:web:c26cf33ec8517bcb8636df"
-};
-
-// Initialize Firebase (compat version)
-let app, auth, database;
-let isFirebaseReady = false;
-
-function initFirebase() {
-  try {
-    if (typeof firebase !== 'undefined') {
-      app = firebase.initializeApp(firebaseConfig);
-      auth = firebase.auth();
-      database = firebase.database();
-      isFirebaseReady = true;
-      console.log('Firebase initialized successfully');
-      
-      // Auth state listener
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          console.log('User logged in:', user.email);
-          loadUserData(user.uid);
-        } else {
-          CU = null;
-          go('S-login');
-        }
-      });
-      
-      return true;
-    }
-  } catch (e) {
-    console.error('Firebase init error:', e);
-  }
-  return false;
-}
-
-// Wait for Firebase SDK to load
-document.addEventListener('DOMContentLoaded', function() {
-  let attempts = 0;
-  const maxAttempts = 50;
-  
-  const checkFirebase = setInterval(function() {
-    attempts++;
-    if (initFirebase()) {
-      clearInterval(checkFirebase);
-    } else if (attempts >= maxAttempts) {
-      clearInterval(checkFirebase);
-      console.error('Failed to initialize Firebase after', maxAttempts, 'attempts');
-      showToast('Failed to connect to server. Please refresh.', 'err');
-    }
-  }, 100);
-});
-
-// ── CONSTANTS ──────────────────────────────────────────────
-const ADMIN_EMAIL = 'business236670@gmail.com';
-const ADMIN_PASS = 'Shamas157884';
-
-const PLANS = [
-  {id:1,name:'Starter Plan', invest:1000,  daily:120,  days:45,total:5400,   cls:'p1',em:'⭐'},
-  {id:2,name:'Basic Plan',   invest:2000,  daily:250,  days:45,total:11250,  cls:'p2',em:'💚'},
-  {id:3,name:'Silver Plan',  invest:5000,  daily:650,  days:45,total:29250,  cls:'p3',em:'🥈'},
-  {id:4,name:'Gold Plan',    invest:10000, daily:1400, days:45,total:63000,  cls:'p4',em:'🥇'},
-  {id:5,name:'Platinum Plan',invest:20000, daily:3000, days:45,total:135000, cls:'p5',em:'💜'},
-  {id:6,name:'Diamond Plan', invest:50000, daily:8000, days:45,total:360000, cls:'p6',em:'💎'},
-  {id:7,name:'VIP Plan',     invest:100000,daily:18000,days:45,total:810000, cls:'p7',em:'👑'}
-];
-
-const TASKS = [
-  {id:'t1',title:'Watch Promo Video',    desc:'Watch 30-sec promotional video',    ico:'🎬',pct:.2},
-  {id:'t2',title:'Share on Social Media',desc:'Share referral link on any platform',ico:'📱',pct:.2},
-  {id:'t3',title:'Daily Check-in',       desc:'Confirm your daily presence',        ico:'📅',pct:.2},
-  {id:'t4',title:'Rate Our App',         desc:'Give us a 5-star rating',            ico:'⭐',pct:.2},
-  {id:'t5',title:'Invite a Friend',      desc:'Send referral link to someone',      ico:'👥',pct:.2}
-];
-
-// ── STATE ──────────────────────────────────────────────────
-let CU = null; // current user
-
-// ── FIREBASE DATABASE HELPERS ──────────────────────────────
-function getUserRef(uid) {
-  return database.ref('users/' + uid);
-}
-
-function getUserDataAsync(uid) {
-  return new Promise((resolve, reject) => {
-    database.ref('users/' + uid).once('value')
-      .then(snapshot => resolve(snapshot.exists() ? snapshot.val() : null))
-      .catch(reject);
-  });
-}
-
-function updateUserDataAsync(uid, data) {
-  return database.ref('users/' + uid).update(data);
-}
-
-function setUserDataAsync(uid, data) {
-  return database.ref('users/' + uid).set(data);
-}
-
-function addDepositAsync(depositData) {
-  return database.ref('deposits').push(depositData);
-}
-
-function addWithdrawalAsync(withdrawData) {
-  return database.ref('withdrawals').push(withdrawData);
-}
-
-function updateDepositAsync(depositId, data) {
-  return database.ref('deposits/' + depositId).update(data);
-}
-
-function updateWithdrawalAsync(withdrawId, data) {
-  return database.ref('withdrawals/' + withdrawId).update(data);
-}
-
-function getAllDepositsAsync() {
-  return new Promise((resolve, reject) => {
-    database.ref('deposits').once('value')
-      .then(snapshot => {
-        if (!snapshot.exists()) return resolve([]);
-        const data = snapshot.val();
-        resolve(Object.entries(data).map(([id, val]) => ({ id, ...val })));
-      })
-      .catch(reject);
-  });
-}
-
-function getAllWithdrawalsAsync() {
-  return new Promise((resolve, reject) => {
-    database.ref('withdrawals').once('value')
-      .then(snapshot => {
-        if (!snapshot.exists()) return resolve([]);
-        const data = snapshot.val();
-        resolve(Object.entries(data).map(([id, val]) => ({ id, ...val })));
-      })
-      .catch(reject);
-  });
-}
-
-function getAllUsersAsync() {
-  return new Promise((resolve, reject) => {
-    database.ref('users').once('value')
-      .then(snapshot => {
-        if (!snapshot.exists()) return resolve([]);
-        const data = snapshot.val();
-        resolve(Object.entries(data).map(([uid, val]) => ({ uid, ...val })));
-      })
-      .catch(reject);
-  });
-}
-
-function getTaskDataAsync(uid) {
-  return new Promise((resolve, reject) => {
-    const today = new Date().toISOString().split('T')[0];
-    database.ref('tasks/' + uid).once('value')
-      .then(snapshot => {
-        let data = snapshot.exists() ? snapshot.val() : null;
-        if (!data || data.date !== today) {
-          data = { date: today, completed: [] };
-          database.ref('tasks/' + uid).set(data);
-        }
-        resolve(data);
-      })
-      .catch(reject);
-  });
-}
-
-function updateTaskDataAsync(uid, data) {
-  return database.ref('tasks/' + uid).set(data);
-}
-
-function findUserByRefCodeAsync(refCode) {
-  return new Promise((resolve, reject) => {
-    getAllUsersAsync()
-      .then(users => resolve(users.find(u => u.refCode === refCode)))
-      .catch(reject);
-  });
-}
-
-// ── LOADING OVERLAY ────────────────────────────────────────
-function showLoading(text) {
-  const el = document.getElementById('loading-overlay');
-  const txt = el.querySelector('.loading-text');
-  txt.textContent = text || 'Please wait...';
-  el.classList.add('show');
-}
-
-function hideLoading() {
-  document.getElementById('loading-overlay').classList.remove('show');
-}
-
-// ── SCREEN SWITCHER ────────────────────────────────────────
-function go(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const el = document.getElementById(id);
-  if (el) el.classList.add('active');
-
-  // Auto-fill referral code when going to register screen
-  if (id === 'S-register') {
-    const refInput = document.getElementById('r-ref');
-    if (refInput) {
-      // Check URL param first
-      const urlRef = getUrlParam('ref');
-      if (urlRef) {
-        refInput.value = urlRef.toUpperCase();
-      } else {
-        // Check sessionStorage
-        const storedRef = sessionStorage.getItem('refCode');
-        if (storedRef) {
-          refInput.value = storedRef;
-        }
-      }
-    }
-  }
-}
-
-// Helper function to go to register with referral code
-function goToRegister() {
-  go('S-register');
-}
-
-// ── LOAD USER DATA ─────────────────────────────────────────
-async function loadUserData(uid) {
-  showLoading('Loading your data...');
-  try {
-    const userData = await getUserDataAsync(uid);
-    if (userData) {
-      CU = { uid, ...userData };
-      
-      // Check if blocked
-      if (CU.blocked) {
-        hideLoading();
-        await auth.signOut();
-        showToast('Your account is blocked. Contact support.', 'err');
-        return;
-      }
-      
-      // Check if admin
-      if (CU.email === ADMIN_EMAIL) {
-        CU.isAdmin = true;
-        go('S-admin');
-        loadAdminStats();
-      } else {
-        // Check daily earnings
-        await checkDailyEarnings();
-        go('S-app');
-        nav('dashboard');
-      }
-    } else {
-      showToast('User data not found', 'err');
-      go('S-login');
-    }
-  } catch (e) {
-    console.error('Error loading user data:', e);
-    showToast('Error loading data', 'err');
-  } finally {
-    hideLoading();
-  }
-}
-
-// ── LOGIN ──────────────────────────────────────────────────
-async function doLogin() {
-  if (!isFirebaseReady) {
-    showToast('Please wait, initializing...', 'inf');
-    return;
-  }
-  
-  const email = val('l-email').toLowerCase();
-  const pass = val('l-pass');
-  
-  if (!email) return showToast('Please enter your email', 'err');
-  if (!pass) return showToast('Please enter your password', 'err');
-  
-  showLoading('Signing in...');
-  
-  try {
-    // ADMIN LOGIN (bypass Firebase for admin)
-    if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
-      CU = { email: ADMIN_EMAIL, name: 'Admin', isAdmin: true };
-      go('S-admin');
-      loadAdminStats();
-      hideLoading();
-      return;
-    }
-    
-    // USER LOGIN via Firebase
-    const userCredential = await auth.signInWithEmailAndPassword(email, pass);
-    const user = userCredential.user;
-    
-    // User data will be loaded by onAuthStateChanged
-    
-  } catch (error) {
-    hideLoading();
-    console.error('Login error:', error);
-    let msg = 'Login failed';
-    if (error.code === 'auth/user-not-found') msg = 'Account not found. Please register first.';
-    else if (error.code === 'auth/wrong-password') msg = 'Incorrect password. Please try again.';
-    else if (error.code === 'auth/invalid-credential') msg = 'Invalid email or password';
-    else if (error.code === 'auth/too-many-requests') msg = 'Too many attempts. Try again later.';
-    else if (error.code === 'auth/invalid-email') msg = 'Invalid email address';
-    showToast(msg, 'err');
-  }
-}
-
-// ── REGISTER ───────────────────────────────────────────────
-async function doRegister() {
-  if (!isFirebaseReady) {
-    showToast('Please wait, initializing...', 'inf');
-    return;
-  }
-  
-  const name = val('r-name');
-  const email = val('r-email').toLowerCase();
-  const phone = val('r-phone');
-  const pass = val('r-pass');
-  const ref = val('r-ref').toUpperCase();
-  
-  if (!name) return showToast('Please enter your full name', 'err');
-  if (!email) return showToast('Please enter your email address', 'err');
-  if (!phone) return showToast('Please enter your phone number', 'err');
-  if (!pass) return showToast('Please enter a password', 'err');
-  if (pass.length < 6) return showToast('Password must be at least 6 characters', 'err');
-  if (!/\S+@\S+\.\S+/.test(email)) return showToast('Please enter a valid email address', 'err');
-  
-  showLoading('Creating account...');
-  
-  try {
-    // Check if referral code is valid
-    let referredBy = null;
-    let parentUid = null;
-    
-    if (ref) {
-      const parent = await findUserByRefCodeAsync(ref);
-      if (!parent) {
-        hideLoading();
-        return showToast('Invalid referral code', 'err');
-      }
-      referredBy = ref;
-      parentUid = parent.uid;
-    }
-    
-    // Create Firebase Auth user
-    const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-    const user = userCredential.user;
-    
-    const refCode = 'EPZ' + Math.random().toString(36).substr(2, 6).toUpperCase();
-    
-    const newUser = {
-      uid: user.uid,
-      name: name,
-      email: email,
-      phone: phone,
-      refCode: refCode,
-      joinDate: new Date().toISOString().split('T')[0],
-      blocked: false,
-      depBal: 0,
-      curBal: 0,
-      totalBal: 0,
-      activePlan: null,
-      planExpiry: null,
-      dailyEarn: 0,
-      totalWithdraws: 0,
-      referrals: [],
-      refEarnings: 0,
-      referredBy: referredBy,
-      lastEarnDate: null
-    };
-    
-    // Save to database
-    await setUserDataAsync(user.uid, newUser);
-    
-    // Add to parent's referrals
-    if (parentUid) {
-      const parentData = await getUserDataAsync(parentUid);
-      if (parentData) {
-        const refs = parentData.referrals || [];
-        if (!refs.includes(email)) {
-          refs.push(email);
-          await updateUserDataAsync(parentUid, { referrals: refs });
-        }
-      }
-    }
-    
-    hideLoading();
-    showToast('Account created! Please login.', 'ok');
-    
-    // Clear fields
-    ['r-name', 'r-email', 'r-phone', 'r-pass', 'r-ref'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-    
-    setTimeout(() => go('S-login'), 1600);
-    
-  } catch (error) {
-    hideLoading();
-    console.error('Register error:', error);
-    let msg = 'Registration failed';
-    if (error.code === 'auth/email-already-in-use') msg = 'This email is already registered';
-    else if (error.code === 'auth/invalid-email') msg = 'Invalid email address';
-    else if (error.code === 'auth/weak-password') msg = 'Password is too weak';
-    showToast(msg, 'err');
-  }
-}
-
-// ── FORGOT PASSWORD ────────────────────────────────────────
-async function doForgot() {
-  if (!isFirebaseReady) {
-    showToast('Please wait, initializing...', 'inf');
-    return;
-  }
-  
-  const email = val('f-email').toLowerCase();
-  if (!email) return showToast('Please enter your email', 'err');
-  
-  showLoading('Sending reset link...');
-  
-  try {
-    await auth.sendPasswordResetEmail(email);
-    hideLoading();
-    showToast('Password reset link sent to your email!', 'ok');
-    setTimeout(() => go('S-login'), 1600);
-  } catch (error) {
-    hideLoading();
-    console.error('Forgot password error:', error);
-    let msg = 'Failed to send reset link';
-    if (error.code === 'auth/user-not-found') msg = 'No account found with this email';
-    showToast(msg, 'err');
-  }
-}
-
-// ── LOGOUT ─────────────────────────────────────────────────
-async function doLogout() {
-  if (!isFirebaseReady) return;
-  
-  showLoading('Logging out...');
-  
-  try {
-    await auth.signOut();
-    CU = null;
-    go('S-login');
-    hideLoading();
-    showToast('Logged out successfully', 'inf');
-  } catch (error) {
-    hideLoading();
-    console.error('Logout error:', error);
-    showToast('Logout failed', 'err');
-  }
-}
-
-// ── DAILY EARNINGS ─────────────────────────────────────────
-async function checkDailyEarnings() {
-  if (!CU) return;
-  
-  const today = new Date().toISOString().split('T')[0];
-  
-  // Check if plan expired
-  if (CU.activePlan && CU.planExpiry) {
-    if (new Date() > new Date(CU.planExpiry)) {
-      CU.activePlan = null;
-      CU.planExpiry = null;
-      CU.dailyEarn = 0;
-      await updateUserDataAsync(CU.uid, {
-        activePlan: null,
-        planExpiry: null,
-        dailyEarn: 0
-      });
-      return;
-    }
-  }
-  
-  // Add daily earnings if not already earned today
-  if (CU.activePlan && CU.lastEarnDate !== today) {
-    const newCurBal = (CU.curBal || 0) + (CU.dailyEarn || 0);
-    const newTotalBal = (CU.depBal || 0) + newCurBal;
-    
-    CU.curBal = newCurBal;
-    CU.totalBal = newTotalBal;
-    CU.lastEarnDate = today;
-    
-    await updateUserDataAsync(CU.uid, {
-      curBal: newCurBal,
-      totalBal: newTotalBal,
-      lastEarnDate: today
-    });
-  }
-}
-
-// ── USER NAV ───────────────────────────────────────────────
-function nav(page) {
-  ['dashboard', 'plans', 'tasks', 'deposit', 'withdraw', 'referral', 'profile'].forEach(p => {
-    const el = document.getElementById('P-' + p);
-    if (el) el.style.display = 'none';
-  });
-  const el = document.getElementById('P-' + page);
-  if (el) { el.style.display = 'flex'; el.style.flexDirection = 'column'; el.scrollTop = 0; }
-  
-  document.querySelectorAll('.ni').forEach(n => n.classList.remove('on'));
-  ['dashboard', 'plans', 'tasks', 'referral', 'profile'].forEach(p => {
-    if (p === page) { const ni = document.getElementById('ni-' + p); if (ni) ni.classList.add('on'); }
-  });
-  
-  if (page === 'dashboard') loadDashboard();
-  if (page === 'plans') loadPlans();
-  if (page === 'tasks') loadTasks();
-  if (page === 'deposit') loadDepHist();
-  if (page === 'withdraw') loadWithHist();
-  if (page === 'referral') loadReferral();
-  if (page === 'profile') loadProfile();
-}
-
-// ── DASHBOARD ──────────────────────────────────────────────
-async function loadDashboard() {
-  if (!CU) return;
-  
-  // Refresh user data
-  try {
-    const freshData = await getUserDataAsync(CU.uid);
-    if (freshData) {
-      CU = { ...CU, ...freshData };
-    }
-  } catch (e) {
-    console.error('Error refreshing user data:', e);
-  }
-  
-  const h = new Date().getHours();
-  set('d-greet', h < 12 ? 'Good morning,' : h < 18 ? 'Good afternoon,' : 'Good evening,');
-  set('d-name', CU.name);
-  set('d-total', fmt(CU.totalBal || 0));
-  set('d-dep', fmt(CU.depBal || 0) + ' PKR');
-  set('d-cur', fmt(CU.curBal || 0) + ' PKR');
-  set('d-daily', fmt(CU.dailyEarn || 0) + ' PKR');
-  set('d-ref-earn', fmt(CU.refEarnings || 0) + ' PKR');
-  set('d-refs', (CU.referrals || []).length);
-  
-  if (CU.activePlan && CU.planExpiry) {
-    const plan = PLANS.find(p => p.id === CU.activePlan);
-    const days = Math.max(0, Math.ceil((new Date(CU.planExpiry) - new Date()) / 86400000));
-    set('d-expiry', days + 'd');
-    set('d-plan-badge', plan ? plan.em + ' ' + plan.name : '💎 Active Plan');
-  } else {
-    set('d-expiry', '—');
-    set('d-plan-badge', '💎 No Active Plan');
-  }
-  
-  const tp = document.getElementById('d-tasks-prev');
-  if (!CU.activePlan) {
-    tp.innerHTML = '<div class="empty">🔒 Purchase a plan to unlock daily tasks</div>';
-    return;
-  }
-  
-  try {
-    const td = await getTaskDataAsync(CU.uid);
-    tp.innerHTML = TASKS.slice(0, 3).map(t => {
-      const done = td.completed.includes(t.id);
-      const rwd = Math.floor((CU.dailyEarn || 0) * t.pct);
-      return `<div class="tc"><div class="tc-h">
-        <div class="tc-ico">${done ? '✅' : t.ico}</div>
-        <div class="tc-info"><h4>${t.title}</h4><p>${t.desc}</p></div>
-        <div class="tc-reward"><div class="amt">${done ? 'Done' : '+' + rwd}</div><div class="lbl">PKR</div></div>
-      </div><div class="tc-prog"><div class="tc-progf" style="width:${done ? 100 : 0}%"></div></div></div>`;
-    }).join('');
-  } catch (e) {
-    console.error('Error loading tasks:', e);
-  }
-}
-
-// ── PLANS ──────────────────────────────────────────────────
-function loadPlans() {
-  document.getElementById('plans-list').innerHTML = PLANS.map(p => `
-  <div class="plan-card ${p.cls}" onclick="openPlanModal(${p.id})"><div class="pc-inner">
-    <div class="pc-badge">${p.em} ${p.name}</div>
-    <div class="pc-name">${fmt(p.invest)} PKR</div>
-    <div class="pc-sub">Investment Required</div>
-    <div class="pc-stats">
-      <div><div class="ps-v">${fmt(p.daily)}</div><div class="ps-l">Daily PKR</div></div>
-      <div><div class="ps-v">45</div><div class="ps-l">Days</div></div>
-      <div><div class="ps-v">${(p.total / 1000).toFixed(0)}K</div><div class="ps-l">Total PKR</div></div>
+<div class="modal-ov" id="success-modal">
+  <div class="modal-box">
+    <div class="mh"></div>
+    <div class="success-modal">
+      <div class="icon">🎉</div>
+      <h3 id="success-title">Success!</h3>
+      <p id="success-message">Your plan has been activated successfully.</p>
+      <button class="btn-p" onclick="closeSuccessModal()">Awesome!</button>
     </div>
-    <div class="pc-btn">Purchase Plan →</div>
-  </div></div>`).join('');
-}
-
-let selPlan = null;
-function openPlanModal(id) {
-  selPlan = PLANS.find(p => p.id === id);
-  set('m-plan-name', selPlan.em + ' ' + selPlan.name);
-  document.getElementById('m-plan-details').innerHTML = `
-  <div style="background:#111827;border-radius:14px;padding:15px">
-    ${[['Investment', fmt(selPlan.invest) + ' PKR'],
-    ['Daily Earning', '<span style="color:#00e676">' + fmt(selPlan.daily) + ' PKR</span>'],
-    ['Duration', '45 Days'],
-    ['Total Return', '<span style="color:#ffd700">' + fmt(selPlan.total) + ' PKR</span>']
-    ].map(([k, v]) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><span style="color:#90a4ae;font-size:13px">${k}</span><span style="font-weight:700">${v}</span></div>`).join('')}
   </div>
-  <div class="warn-box" style="margin-top:12px;margin-bottom:0"><p>⚠️ You need <strong>${fmt(selPlan.invest)} PKR</strong> in deposit balance.</p></div>`;
-  document.getElementById('plan-modal').classList.add('open');
-}
+</div>
 
-function closeModal() { document.getElementById('plan-modal').classList.remove('open'); selPlan = null; }
+<div class="modal-ov" id="user-modal">
+  <div class="modal-box">
+    <div class="mh"></div>
+    <h3>👤 User Details</h3>
+    <div id="user-details" style="margin-top:15px"></div>
+    <button class="btn-s" onclick="closeUserModal()" style="margin-top:15px">Close</button>
+  </div>
+</div>
 
-async function buyPlan() {
-  if (!selPlan || !CU) return;
-  
-  if ((CU.depBal || 0) < selPlan.invest) {
-    closeModal();
-    return showToast('Insufficient deposit balance. Please deposit first.', 'err');
-  }
-  if (CU.activePlan) {
-    closeModal();
-    return showToast('You already have an active plan!', 'err');
-  }
-  
-  showLoading('Activating plan...');
-  
-  const newDepBal = (CU.depBal || 0) - selPlan.invest;
-  const exp = new Date();
-  exp.setDate(exp.getDate() + 45);
-  
-  CU.depBal = newDepBal;
-  CU.activePlan = selPlan.id;
-  CU.dailyEarn = selPlan.daily;
-  CU.planExpiry = exp.toISOString().split('T')[0];
-  CU.totalBal = newDepBal + (CU.curBal || 0);
-  
-  try {
-    await updateUserDataAsync(CU.uid, {
-      depBal: newDepBal,
-      activePlan: selPlan.id,
-      dailyEarn: selPlan.daily,
-      planExpiry: CU.planExpiry,
-      totalBal: CU.totalBal
-    });
-    
-    // Give referral commission to referrer when user buys plan (after deposit approval)
-    if (CU.referredBy && CU.refCommissionEligible && !CU.refCommissionGiven) {
-      try {
-        const users = await getAllUsersAsync();
-        const refUser = users.find(r => r.refCode === CU.referredBy);
-        if (refUser) {
-          const comm = Math.floor(selPlan.invest * .10); // 10% of plan investment
-          const refCurBal = (refUser.curBal || 0) + comm;
-          const refTotalBal = (refUser.depBal || 0) + refCurBal;
-          const refEarnings = (refUser.refEarnings || 0) + comm;
-          
-          await updateUserDataAsync(refUser.uid, {
-            curBal: refCurBal,
-            totalBal: refTotalBal,
-            refEarnings: refEarnings
-          });
-          
-          // Mark commission as given for this user
-          await updateUserDataAsync(CU.uid, { refCommissionGiven: true });
-          CU.refCommissionGiven = true;
-        }
-      } catch (e) {
-        console.error('Error giving referral commission:', e);
-      }
-    }
-    
-    hideLoading();
-    closeModal();
-    showToast(selPlan.name + ' activated! 🎉', 'ok');
-    loadDashboard();
-  } catch (e) {
-    hideLoading();
-    showToast('Failed to activate plan', 'err');
-  }
-}
-
-// ── TASKS ──────────────────────────────────────────────────
-async function loadTasks() {
-  if (!CU) return;
-  
-  const el = document.getElementById('tasks-list');
-  if (!CU.activePlan) {
-    el.innerHTML = '<div class="empty">🔒 Purchase a plan to unlock daily tasks</div>';
-    set('t-prog-txt', '0/0');
-    return;
-  }
-  
-  try {
-    const td = await getTaskDataAsync(CU.uid);
-    const done = td.completed.length;
-    const total = TASKS.length;
-    set('t-prog-txt', done + '/' + total);
-    document.getElementById('t-prog-bar').style.width = (done / total * 100) + '%';
-    
-    el.innerHTML = TASKS.map(t => {
-      const isDone = td.completed.includes(t.id);
-      const rwd = Math.floor((CU.dailyEarn || 0) * t.pct);
-      return `<div class="tc"><div class="tc-h">
-        <div class="tc-ico" ${isDone ? 'style="background:linear-gradient(135deg,#00c853,#00897b)"' : ''}>${isDone ? '✅' : t.ico}</div>
-        <div class="tc-info"><h4>${t.title}</h4><p>${t.desc}</p></div>
-        <div class="tc-reward"><div class="amt" style="${isDone ? 'color:#546e7a' : ''}">${isDone ? '✓ Done' : '+' + rwd}</div><div class="lbl">PKR</div></div>
-      </div><div class="tc-prog"><div class="tc-progf" style="width:${isDone ? 100 : 0}%"></div></div>
-      <button class="tc-btn ${isDone ? 'done' : ''}" ${isDone ? 'disabled' : ''} onclick="doTask('${t.id}',${rwd})">${isDone ? '✅ Completed' : '▶ Start Task'}</button>
-      </div>`;
-    }).join('');
-  } catch (e) {
-    console.error('Error loading tasks:', e);
-    el.innerHTML = '<div class="empty">Error loading tasks</div>';
-  }
-}
-
-async function doTask(taskId, reward) {
-  if (!CU) return;
-  
-  showLoading('Processing...');
-  
-  try {
-    const td = await getTaskDataAsync(CU.uid);
-    if (td.completed.includes(taskId)) {
-      hideLoading();
-      return;
-    }
-    
-    td.completed.push(taskId);
-    const newCurBal = (CU.curBal || 0) + reward;
-    const newTotalBal = (CU.depBal || 0) + newCurBal;
-    
-    CU.curBal = newCurBal;
-    CU.totalBal = newTotalBal;
-    
-    await updateTaskDataAsync(CU.uid, td);
-    await updateUserDataAsync(CU.uid, {
-      curBal: newCurBal,
-      totalBal: newTotalBal
-    });
-    
-    hideLoading();
-    showToast('+' + reward + ' PKR earned! ✅', 'ok');
-    loadTasks();
-  } catch (e) {
-    hideLoading();
-    console.error('Error completing task:', e);
-    showToast('Failed to complete task', 'err');
-  }
-}
-
-// ── DEPOSIT ────────────────────────────────────────────────
-async function submitDeposit() {
-  if (!CU) return;
-  
-  const name = val('dep-name');
-  const acc = val('dep-acc');
-  const txid = val('dep-txid');
-  const amount = parseInt(val('dep-amt') || '0');
-  
-  if (!name) return showToast('Please enter account holder name', 'err');
-  if (!acc) return showToast('Please enter account number', 'err');
-  if (!txid) return showToast('Please enter transaction ID', 'err');
-  if (!amount || amount < 1000) return showToast('Minimum deposit is 1,000 PKR', 'err');
-  
-  showLoading('Submitting deposit...');
-  
-  const depositData = {
-    userUid: CU.uid,
-    userEmail: CU.email,
-    userName: CU.name,
-    accountHolder: name,
-    accountNumber: acc,
-    txid: txid,
-    amount: amount,
-    status: 'pending',
-    date: new Date().toLocaleDateString(),
-    timestamp: Date.now()
-  };
-  
-  try {
-    await addDepositAsync(depositData);
-    
-    ['dep-name', 'dep-acc', 'dep-txid', 'dep-amt'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-    
-    hideLoading();
-    showToast('Deposit submitted! Awaiting admin approval.', 'ok');
-    loadDepHist();
-  } catch (e) {
-    hideLoading();
-    console.error('Error submitting deposit:', e);
-    showToast('Failed to submit deposit', 'err');
-  }
-}
-
-async function loadDepHist() {
-  if (!CU) return;
-  
-  try {
-    const all = await getAllDepositsAsync();
-    const mine = all.filter(d => d.userEmail === CU.email).reverse();
-    const el = document.getElementById('dep-hist');
-    
-    if (!mine.length) {
-      el.innerHTML = '<div class="empty">No deposit history yet</div>';
-      return;
-    }
-    
-    el.innerHTML = mine.map(d => `
-    <div class="hi">
-      <div class="hi-ico" style="background:rgba(0,200,83,.1)">💳</div>
-      <div class="hi-info"><h4>Deposit Request</h4><p>${d.date} • TxID: ${d.txid}</p></div>
-      <div class="hi-right"><div class="hi-amt" style="color:#00e676">+${fmt(d.amount)}</div>
-      <div class="badge ${d.status === 'approved' ? 'ba' : d.status === 'rejected' ? 'br' : 'bp'}">${d.status.toUpperCase()}</div></div>
-    </div>`).join('');
-  } catch (e) {
-    console.error('Error loading deposit history:', e);
-  }
-}
-
-// ── WITHDRAW ───────────────────────────────────────────────
-function calcFee() {
-  const amt = parseFloat(val('w-amt') || '0');
-  const box = document.getElementById('w-fee-box');
-  if (amt > 0) {
-    set('wf-gross', fmt(amt) + ' PKR');
-    set('wf-fee', fmt(amt * .2) + ' PKR');
-    set('wf-net', fmt(amt * .8) + ' PKR');
-    box.style.display = 'block';
-  } else box.style.display = 'none';
-}
-
-async function submitWithdraw() {
-  if (!CU) return;
-  
-  const method = val('w-method');
-  const acc = val('w-acc');
-  const holder = val('w-holder');
-  const amount = parseFloat(val('w-amt') || '0');
-  
-  if (!method) return showToast('Please select a withdrawal method', 'err');
-  if (!acc) return showToast('Please enter account number', 'err');
-  if (!holder) return showToast('Please enter account holder name', 'err');
-  if (!amount || amount < 120) return showToast('Minimum withdrawal is 120 PKR', 'err');
-  
-  showLoading('Processing withdrawal...');
-  
-  try {
-    // Check referral requirement after 3 withdrawals
-    if ((CU.totalWithdraws || 0) >= 3) {
-      const users = await getAllUsersAsync();
-      const activeRefs = (CU.referrals || []).filter(e => {
-        const refUser = users.find(u => u.email === e);
-        return refUser && refUser.activePlan;
-      });
-      if (activeRefs.length < 1) {
-        hideLoading();
-        return showToast('After 3 withdrawals, 1 active referral required!', 'err');
-      }
-    }
-    
-    if ((CU.curBal || 0) < amount) {
-      hideLoading();
-      return showToast('Insufficient current balance', 'err');
-    }
-    
-    const fee = amount * .2;
-    const net = amount - fee;
-    const newCurBal = (CU.curBal || 0) - amount;
-    const newTotalBal = (CU.depBal || 0) + newCurBal;
-    const newTotalWithdraws = (CU.totalWithdraws || 0) + 1;
-    
-    CU.curBal = newCurBal;
-    CU.totalBal = newTotalBal;
-    CU.totalWithdraws = newTotalWithdraws;
-    
-    await updateUserDataAsync(CU.uid, {
-      curBal: newCurBal,
-      totalBal: newTotalBal,
-      totalWithdraws: newTotalWithdraws
-    });
-    
-    const withdrawData = {
-      userUid: CU.uid,
-      userEmail: CU.email,
-      userName: CU.name,
-      method: method,
-      accountNumber: acc,
-      accountHolder: holder,
-      grossAmount: amount,
-      fee: fee,
-      netAmount: net,
-      status: 'pending',
-      date: new Date().toLocaleDateString(),
-      timestamp: Date.now()
-    };
-    
-    await addWithdrawalAsync(withdrawData);
-    
-    ['w-method', 'w-acc', 'w-holder', 'w-amt'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-    document.getElementById('w-fee-box').style.display = 'none';
-    
-    hideLoading();
-    showToast('Withdrawal submitted! You receive ' + fmt(net) + ' PKR after fee.', 'ok');
-    loadWithHist();
-  } catch (e) {
-    hideLoading();
-    console.error('Error submitting withdrawal:', e);
-    showToast('Failed to submit withdrawal', 'err');
-  }
-}
-
-async function loadWithHist() {
-  if (!CU) return;
-  
-  try {
-    const all = await getAllWithdrawalsAsync();
-    const mine = all.filter(w => w.userEmail === CU.email).reverse();
-    const el = document.getElementById('with-hist');
-    
-    if (!mine.length) {
-      el.innerHTML = '<div class="empty">No withdrawal history yet</div>';
-      return;
-    }
-    
-    el.innerHTML = mine.map(w => `
-    <div class="hi">
-      <div class="hi-ico" style="background:rgba(233,30,140,.1)">💸</div>
-      <div class="hi-info"><h4>${w.method}</h4><p>${w.date} • ${w.accountNumber}</p></div>
-      <div class="hi-right"><div class="hi-amt" style="color:#e91e8c">-${fmt(w.grossAmount)}</div>
-      <div class="badge ${w.status === 'approved' ? 'ba' : w.status === 'rejected' ? 'br' : 'bp'}">${w.status.toUpperCase()}</div></div>
-    </div>`).join('');
-  } catch (e) {
-    console.error('Error loading withdrawal history:', e);
-  }
-}
-
-// ── REFERRAL ───────────────────────────────────────────────
-async function loadReferral() {
-  if (!CU) return;
-  
-  try {
-    // Refresh data
-    const freshData = await getUserDataAsync(CU.uid);
-    if (freshData) {
-      CU = { ...CU, ...freshData };
-    }
-    
-    set('ref-code', CU.refCode);
-    
-    const users = await getAllUsersAsync();
-    const activeRefs = (CU.referrals || []).filter(e => {
-      const refUser = users.find(u => u.email === e);
-      return refUser && refUser.activePlan;
-    });
-    
-    set('rf-total', (CU.referrals || []).length);
-    set('rf-active', activeRefs.length);
-    set('rf-earn', fmt(CU.refEarnings || 0) + ' PKR');
-    
-    const l1 = Math.min((CU.referrals || []).length, 5);
-    const l2 = Math.min(Math.max((CU.referrals || []).length - 5, 0), 15);
-    const l3 = Math.min(Math.max((CU.referrals || []).length - 20, 0), 35);
-    
-    set('lv1-txt', l1 + '/5');
-    document.getElementById('lv1-bar').style.width = (l1 / 5 * 100) + '%';
-    set('lv2-txt', l2 + '/15');
-    document.getElementById('lv2-bar').style.width = (l2 / 15 * 100) + '%';
-    set('lv3-txt', l3 + '/35');
-    document.getElementById('lv3-bar').style.width = (l3 / 35 * 100) + '%';
-  } catch (e) {
-    console.error('Error loading referral data:', e);
-  }
-}
-
-function copyCode() {
-  if (!CU) return;
-  cp(CU.refCode);
-  showToast('Referral code copied! 📋', 'ok');
-}
-
-function copyLink() {
-  if (!CU) return;
-  const link = getBaseUrl() + '?ref=' + CU.refCode;
-  cp(link);
-  showToast('Referral link copied! 🔗', 'ok');
-}
-
-function cp(txt) {
-  try {
-    navigator.clipboard.writeText(txt);
-  } catch (e) {
-    const el = document.createElement('textarea');
-    el.value = txt;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-  }
-}
-
-// ── PROFILE ────────────────────────────────────────────────
-async function loadProfile() {
-  if (!CU) return;
-  
-  try {
-    const freshData = await getUserDataAsync(CU.uid);
-    if (freshData) {
-      CU = { ...CU, ...freshData };
-    }
-    
-    set('pr-name', CU.name);
-    set('pr-email', CU.email);
-    const plan = CU.activePlan ? PLANS.find(p => p.id === CU.activePlan) : null;
-    set('pr-plan', plan ? plan.name : 'None');
-    set('pr-bal', fmt(CU.totalBal || 0));
-  } catch (e) {
-    console.error('Error loading profile:', e);
-  }
-}
-
-// ── ADMIN ──────────────────────────────────────────────────
-function adminTab(tab) {
-  ['overview', 'deposits', 'withdrawals', 'users'].forEach(t => {
-    document.getElementById('A-' + t).style.display = 'none';
-    document.getElementById('atab-' + t).classList.remove('on');
-  });
-  document.getElementById('A-' + tab).style.display = 'block';
-  document.getElementById('atab-' + tab).classList.add('on');
-  if (tab === 'overview') loadAdminStats();
-  if (tab === 'deposits') loadAdminDeps();
-  if (tab === 'withdrawals') loadAdminWiths();
-  if (tab === 'users') loadAdminUsers();
-}
-
-async function loadAdminStats() {
-  showLoading('Loading stats...');
-  
-  try {
-    const users = await getAllUsersAsync();
-    const deposits = await getAllDepositsAsync();
-    const withdrawals = await getAllWithdrawalsAsync();
-    
-    const data = [
-      { v: users.length, l: 'Total Users', c: '#00b0ff' },
-      { v: users.filter(u => u.activePlan).length, l: 'Active Plans', c: '#ffd700' },
-      { v: deposits.length, l: 'Total Deposits', c: '#00e676' },
-      { v: deposits.filter(d => d.status === 'pending').length, l: 'Pending Deposits', c: '#ff9800' },
-      { v: withdrawals.length, l: 'Total Withdrawals', c: '#e91e8c' },
-      { v: withdrawals.filter(w => w.status === 'pending').length, l: 'Pending Withdrawals', c: '#f44336' },
-      { v: users.filter(u => u.blocked).length, l: 'Blocked Users', c: '#f44336' },
-      { v: users.filter(u => !u.blocked).length, l: 'Active Users', c: '#00c853' }
-    ];
-    
-    document.getElementById('A-stats').innerHTML = data.map(d =>
-      `<div class="asc"><div class="av" style="color:${d.c}">${d.v}</div><div class="al">${d.l}</div></div>`
-    ).join('');
-  } catch (e) {
-    console.error('Error loading admin stats:', e);
-  } finally {
-    hideLoading();
-  }
-}
-
-async function loadAdminDeps() {
-  showLoading('Loading deposits...');
-  
-  try {
-    const deposits = await getAllDepositsAsync();
-    const list = document.getElementById('A-deps-list');
-    
-    if (!deposits.length) {
-      list.innerHTML = '<div class="empty">No deposits yet</div>';
-      hideLoading();
-      return;
-    }
-    
-    list.innerHTML = deposits.reverse().map(d => `
-    <div class="hi" style="flex-direction:column;align-items:stretch;gap:9px;margin:0 15px 9px">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="hi-ico" style="background:rgba(0,200,83,.1)">💳</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:700">${d.userName || d.userEmail}</div>
-          <div style="font-size:11px;color:#90a4ae">${d.date} • Holder: ${d.accountHolder}</div>
-          <div style="font-size:11px;color:#90a4ae">Acc: ${d.accountNumber} • TxID: ${d.txid}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#00e676">+${fmt(d.amount)}</div>
-          <div class="badge ${d.status === 'approved' ? 'ba' : d.status === 'rejected' ? 'br' : 'bp'}">${d.status.toUpperCase()}</div>
+<div class="modal-ov" id="admin-chat-modal">
+  <div class="modal-box" style="max-height:90vh;padding:0;border-radius:24px 24px 0 0">
+    <div class="chat-header">
+      <div class="chat-item-av" id="admin-chat-user-av">👤</div>
+      <div class="chat-header-info">
+        <h4 id="admin-chat-user-name">User</h4>
+        <p id="admin-chat-user-email">user@email.com</p>
+      </div>
+      <button class="icon-btn" onclick="closeAdminChat()" style="margin-left:auto">✕</button>
+    </div>
+    <div class="chat-messages" id="admin-chat-messages" style="height:50vh"></div>
+    <div class="chat-input-area">
+      <div id="admin-image-preview" class="chat-image-preview" style="display:none">
+        <img id="admin-preview-img" src="" alt="Preview">
+        <button class="remove-btn" onclick="removeAdminImage()">×</button>
+      </div>
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="admin-chat-input" placeholder="Type your reply..." rows="1"></textarea>
+        <div class="chat-actions">
+          <input type="file" id="admin-chat-image-input" accept="image/*" style="display:none" onchange="handleAdminImageSelect(event)">
+          <button class="chat-btn secondary" onclick="document.getElementById('admin-chat-image-input').click()">📷</button>
+          <button class="chat-btn" onclick="sendAdminReply()">➤</button>
         </div>
       </div>
-      ${d.status === 'pending' ? `<div style="display:flex;gap:8px">
-        <button class="app-btn" style="flex:1" onclick="approveDep('${d.id}')">✅ Approve</button>
-        <button class="rej-btn" style="flex:1" onclick="rejectDep('${d.id}')">❌ Reject</button>
-      </div>` : ''}
-    </div>`).join('');
-  } catch (e) {
-    console.error('Error loading admin deposits:', e);
-  } finally {
-    hideLoading();
-  }
-}
-
-async function approveDep(id) {
-  showLoading('Approving deposit...');
-  
-  try {
-    const deposits = await getAllDepositsAsync();
-    const dep = deposits.find(d => d.id === id);
-    if (!dep) {
-      hideLoading();
-      return;
-    }
-    
-    await updateDepositAsync(id, { status: 'approved' });
-    
-    // Update user balance
-    const users = await getAllUsersAsync();
-    const u = users.find(user => user.email === dep.userEmail);
-    
-    if (u) {
-      const newDepBal = (u.depBal || 0) + dep.amount;
-      const newTotalBal = newDepBal + (u.curBal || 0);
-      
-      await updateUserDataAsync(u.uid, {
-        depBal: newDepBal,
-        totalBal: newTotalBal
-      });
-      
-      // Mark user as eligible for referral commission (deposit approved)
-      // Commission will be given when user buys a plan
-      if (u.referredBy && !u.refCommissionEligible) {
-        await updateUserDataAsync(u.uid, { refCommissionEligible: true });
-      }
-    }
-    
-    hideLoading();
-    showToast('Deposit approved ✅', 'ok');
-    loadAdminDeps();
-    loadAdminStats();
-  } catch (e) {
-    hideLoading();
-    console.error('Error approving deposit:', e);
-    showToast('Failed to approve deposit', 'err');
-  }
-}
-
-async function rejectDep(id) {
-  showLoading('Rejecting deposit...');
-  
-  try {
-    await updateDepositAsync(id, { status: 'rejected' });
-    hideLoading();
-    showToast('Deposit rejected', 'inf');
-    loadAdminDeps();
-    loadAdminStats();
-  } catch (e) {
-    hideLoading();
-    console.error('Error rejecting deposit:', e);
-    showToast('Failed to reject deposit', 'err');
-  }
-}
-
-async function loadAdminWiths() {
-  showLoading('Loading withdrawals...');
-  
-  try {
-    const withdrawals = await getAllWithdrawalsAsync();
-    const list = document.getElementById('A-withs-list');
-    
-    if (!withdrawals.length) {
-      list.innerHTML = '<div class="empty">No withdrawals yet</div>';
-      hideLoading();
-      return;
-    }
-    
-    list.innerHTML = withdrawals.reverse().map(w => `
-    <div class="hi" style="flex-direction:column;align-items:stretch;gap:9px;margin:0 15px 9px">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="hi-ico" style="background:rgba(233,30,140,.1)">💸</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:700">${w.userName || w.userEmail}</div>
-          <div style="font-size:11px;color:#90a4ae">${w.date} • ${w.method} • ${w.accountNumber}</div>
-          <div style="font-size:11px;color:#90a4ae">Holder: ${w.accountHolder}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#e91e8c">${fmt(w.grossAmount)} PKR</div>
-          <div class="badge ${w.status === 'approved' ? 'ba' : w.status === 'rejected' ? 'br' : 'bp'}">${w.status.toUpperCase()}</div>
-        </div>
-      </div>
-      ${w.status === 'pending' ? `<div style="display:flex;gap:8px">
-        <button class="app-btn" style="flex:1" onclick="approveWith('${w.id}')">✅ Approve</button>
-        <button class="rej-btn" style="flex:1" onclick="rejectWith('${w.id}')">❌ Reject</button>
-      </div>` : ''}
-    </div>`).join('');
-  } catch (e) {
-    console.error('Error loading admin withdrawals:', e);
-  } finally {
-    hideLoading();
-  }
-}
-
-async function approveWith(id) {
-  showLoading('Approving withdrawal...');
-  
-  try {
-    await updateWithdrawalAsync(id, { status: 'approved' });
-    hideLoading();
-    showToast('Withdrawal approved ✅', 'ok');
-    loadAdminWiths();
-    loadAdminStats();
-  } catch (e) {
-    hideLoading();
-    console.error('Error approving withdrawal:', e);
-    showToast('Failed to approve withdrawal', 'err');
-  }
-}
-
-async function rejectWith(id) {
-  showLoading('Rejecting withdrawal...');
-  
-  try {
-    const withdrawals = await getAllWithdrawalsAsync();
-    const w = withdrawals.find(x => x.id === id);
-    if (!w) {
-      hideLoading();
-      return;
-    }
-    
-    await updateWithdrawalAsync(id, { status: 'rejected' });
-    
-    // Refund user
-    const users = await getAllUsersAsync();
-    const u = users.find(user => user.email === w.userEmail);
-    
-    if (u) {
-      const newCurBal = (u.curBal || 0) + w.grossAmount;
-      const newTotalBal = (u.depBal || 0) + newCurBal;
-      const newTotalWithdraws = Math.max(0, (u.totalWithdraws || 1) - 1);
-      
-      await updateUserDataAsync(u.uid, {
-        curBal: newCurBal,
-        totalBal: newTotalBal,
-        totalWithdraws: newTotalWithdraws
-      });
-    }
-    
-    hideLoading();
-    showToast('Withdrawal rejected & refunded', 'inf');
-    loadAdminWiths();
-    loadAdminStats();
-  } catch (e) {
-    hideLoading();
-    console.error('Error rejecting withdrawal:', e);
-    showToast('Failed to reject withdrawal', 'err');
-  }
-}
-
-async function loadAdminUsers() {
-  showLoading('Loading users...');
-  
-  try {
-    const users = await getAllUsersAsync();
-    const list = document.getElementById('A-users-list');
-    
-    if (!users.length) {
-      list.innerHTML = '<div class="empty">No users registered yet</div>';
-      hideLoading();
-      return;
-    }
-    
-    list.innerHTML = users.map(u => {
-      const plan = u.activePlan ? PLANS.find(p => p.id === u.activePlan) : null;
-      return `<div class="auc">
-        <div class="auh">
-          <div class="au-av">${(u.name || '?').charAt(0).toUpperCase()}</div>
-          <div class="au-info">
-            <h4>${u.name} ${u.blocked ? '🔴' : ''}</h4>
-            <p>${u.email} • ${u.phone || 'No phone'}</p>
-            <p style="color:#546e7a;font-size:10px;margin-top:2px">Plan:${plan ? plan.name : 'None'} | Bal:${fmt(u.totalBal || 0)} PKR | Refs:${(u.referrals || []).length}</p>
-          </div>
-        </div>
-        <div class="au-acts">
-          ${u.blocked
-        ? `<button class="ab ab-unblock" onclick="blockUser('${u.uid}',false)">🔓 Unblock</button>`
-        : `<button class="ab ab-block"   onclick="blockUser('${u.uid}',true)">🔒 Block</button>`}
-        </div>
-      </div>`;
-    }).join('');
-  } catch (e) {
-    console.error('Error loading admin users:', e);
-  } finally {
-    hideLoading();
-  }
-}
-
-async function blockUser(uid, block) {
-  showLoading(block ? 'Blocking user...' : 'Unblocking user...');
-  
-  try {
-    await updateUserDataAsync(uid, { blocked: block });
-    hideLoading();
-    showToast(block ? 'User blocked 🔒' : 'User unblocked 🔓', block ? 'err' : 'ok');
-    loadAdminUsers();
-    loadAdminStats();
-  } catch (e) {
-    hideLoading();
-    console.error('Error blocking user:', e);
-    showToast('Failed to update user', 'err');
-  }
-}
-
-// ── URL PARAMS & REFERRAL LINK HANDLING ────────────────────
-function getUrlParam(name) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(name);
-}
-
-function getBaseUrl() {
-  return window.location.origin + window.location.pathname;
-}
-
-// Check for referral code in URL on page load
-let urlRefCode = null;
-function checkUrlReferral() {
-  const ref = getUrlParam('ref');
-  if (ref) {
-    urlRefCode = ref.toUpperCase();
-    // Store in sessionStorage for persistence across page navigation
-    sessionStorage.setItem('refCode', urlRefCode);
-    // Auto-fill if on register screen
-    const refInput = document.getElementById('r-ref');
-    if (refInput) {
-      refInput.value = urlRefCode;
-    }
-  }
-}
-
-// ── UTILS ──────────────────────────────────────────────────
-function val(id) { const el = document.getElementById(id); return el ? (el.value || '').trim() : ''; }
-function set(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
-function fmt(n) { return Number(n || 0).toLocaleString(); }
-
-let _tt;
-function showToast(msg, type) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show ' + (type || 'inf');
-  clearTimeout(_tt);
-  _tt = setTimeout(() => el.classList.remove('show'), 3200);
-}
-
-// ── INIT ───────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  checkUrlReferral();
-  go('S-login');
-});
+    </div>
+  </div>
+</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyBQdWr6FFQKBJgItP-AIcNCxnKktMFMq-A",authDomain:"elite-profit-zone-35b8b.firebaseapp.com",databaseURL:"https://elite-profit-zone-35b8b-default-rtdb.firebaseio.com",projectId:"elite-profit-zone-35b8b",storageBucket:"elite-profit-zone-35b8b.firebasestorage.app",messagingSenderId:"967472600974",appId:"1:967472600974:web:c26cf33ec8517bcb8636df"};
+let app,auth,database,storage,isFirebaseReady=false;
+function initFirebase(){try{if(typeof firebase!=='undefined'){app=firebase.initializeApp(firebaseConfig);auth=firebase.auth();database=firebase.database();storage=firebase.storage();isFirebaseReady=true;auth.onAuthStateChanged((user)=>{if(user){loadUserData(user.uid)}else{CU=null;go('S-login')}});return true}}catch(e){}return false}
+document.addEventListener('DOMContentLoaded',function(){let attempts=0;const checkFirebase=setInterval(function(){attempts++;if(initFirebase()){clearInterval(checkFirebase)}else if(attempts>=50){clearInterval(checkFirebase)}},100)});
+const ADMIN_EMAIL='business236670@gmail.com',ADMIN_PASS='Shamas157884';
+const ADMIN_AVATAR='https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face';
+const PLANS=[{id:1,name:'Starter Plan',invest:1000,daily:120,days:45,total:5400,cls:'p1',em:'⭐'},{id:2,name:'Basic Plan',invest:2000,daily:250,days:45,total:11250,cls:'p2',em:'💚'},{id:3,name:'Silver Plan',invest:5000,daily:650,days:45,total:29250,cls:'p3',em:'🥈'},{id:4,name:'Gold Plan',invest:10000,daily:1400,days:45,total:63000,cls:'p4',em:'🥇'},{id:5,name:'Platinum Plan',invest:20000,daily:3000,days:45,total:135000,cls:'p5',em:'💜'},{id:6,name:'Diamond Plan',invest:50000,daily:8000,days:45,total:360000,cls:'p6',em:'💎'},{id:7,name:'VIP Plan',invest:100000,daily:18000,days:45,total:810000,cls:'p7',em:'👑'}];
+const TASKS=[{id:'t1',title:'Watch Promo Video',desc:'Watch 30-sec promotional video',ico:'🎬',pct:.2},{id:'t2',title:'Share on Social Media',desc:'Share referral link on any platform',ico:'📱',pct:.2},{id:'t3',title:'Daily Check-in',desc:'Confirm your daily presence',ico:'📅',pct:.2},{id:'t4',title:'Rate Our App',desc:'Give us a 5-star rating',ico:'⭐',pct:.2},{id:'t5',title:'Invite a Friend',desc:'Send referral link to someone',ico:'👥',pct:.2}];
+let CU=null,currentUserFilter='all',selectedImage=null,adminSelectedImage=null,currentChatUserId=null,chatListener=null,adminChatListener=null;
+function getUserDataAsync(uid){return new Promise((resolve,reject)=>{database.ref('users/'+uid).once('value').then(snapshot=>resolve(snapshot.exists()?snapshot.val():null)).catch(reject)})}
+function updateUserDataAsync(uid,data){return database.ref('users/'+uid).update(data)}
+function setUserDataAsync(uid,data){return database.ref('users/'+uid).set(data)}
+function addDepositAsync(depositData){return database.ref('deposits').push(depositData)}
+function addWithdrawalAsync(withdrawData){return database.ref('withdrawals').push(withdrawData)}
+function updateDepositAsync(depositId,data){return database.ref('deposits/'+depositId).update(data)}
+function updateWithdrawalAsync(withdrawId,data){return database.ref('withdrawals/'+withdrawId).update(data)}
+function getAllDepositsAsync(){return new Promise((resolve,reject)=>{database.ref('deposits').once('value').then(snapshot=>{if(!snapshot.exists())return resolve([]);const data=snapshot.val();resolve(Object.entries(data).map(([id,val])=>({id,...val})))}).catch(reject)})}
+function getAllWithdrawalsAsync(){return new Promise((resolve,reject)=>{database.ref('withdrawals').once('value').then(snapshot=>{if(!snapshot.exists())return resolve([]);const data=snapshot.val();resolve(Object.entries(data).map(([id,val])=>({id,...val})))}).catch(reject)})}
+function getAllUsersAsync(){return new Promise((resolve,reject)=>{database.ref('users').once('value').then(snapshot=>{if(!snapshot.exists())return resolve([]);const data=snapshot.val();resolve(Object.entries(data).map(([uid,val])=>({uid,...val})))}).catch(reject)})}
+function getMidnightTimestamp(){const now=new Date();return new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0).getTime()}
+function getTaskDataAsync(uid){return new Promise((resolve,reject)=>{const todayMidnight=getMidnightTimestamp();database.ref('tasks/'+uid).once('value').then(snapshot=>{let data=snapshot.exists()?snapshot.val():null;if(!data||!data.lastReset||data.lastReset<todayMidnight){data={lastReset:Date.now(),completed:[]};database.ref('tasks/'+uid).set(data)}resolve(data)}).catch(reject)})}
+function updateTaskDataAsync(uid,data){return database.ref('tasks/'+uid).set(data)}
+function findUserByRefCodeAsync(refCode){return new Promise((resolve,reject)=>{getAllUsersAsync().then(users=>resolve(users.find(u=>u.refCode===refCode))).catch(reject)})}
+function sendMessageToSupport(uid,message,imageUrl=null){const msgData={userId:uid,userName:CU?CU.name:'User',userEmail:CU?CU.email:'',message:message,imageUrl:imageUrl,timestamp:Date.now(),sender:'user',read:false};return database.ref('support_chats/'+uid+'/messages').push(msgData)}
+function sendAdminReplyToUser(uid,message,imageUrl=null){const msgData={message:message,imageUrl:imageUrl,timestamp:Date.now(),sender:'admin',read:false};return database.ref('support_chats/'+uid+'/messages').push(msgData)}
+function getSupportMessages(uid){return database.ref('support_chats/'+uid+'/messages').orderByChild('timestamp')}
+function getAllSupportChats(){return database.ref('support_chats').once('value')}
+function showLoading(text){const el=document.getElementById('loading-overlay');el.querySelector('.loading-text').textContent=text||'Please wait...';el.classList.add('show')}
+function hideLoading(){document.getElementById('loading-overlay').classList.remove('show')}
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const el=document.getElementById(id);if(el)el.classList.add('active');if(id==='S-register'){const refInput=document.getElementById('r-ref');if(refInput){const urlRef=getUrlParam('ref');if(urlRef){refInput.value=urlRef.toUpperCase()}else{const storedRef=sessionStorage.getItem('refCode');if(storedRef)refInput.value=storedRef}}}}
+function goToRegister(){go('S-register')}
+async function loadUserData(uid){showLoading('Loading your data...');try{const userData=await getUserDataAsync(uid);if(userData){CU={uid,...userData};if(CU.blocked){hideLoading();await auth.signOut();showToast('Your account is blocked. Contact support.','err');return}if(CU.email===ADMIN_EMAIL){CU.isAdmin=true;go('S-admin');loadAdminStats()}else{await checkDailyEarnings();go('S-app');nav('dashboard')}}else{showToast('User data not found','err');go('S-login')}}catch(e){showToast('Error loading data','err')}finally{hideLoading()}}
+async function doLogin(){if(!isFirebaseReady){showToast('Please wait, initializing...','inf');return}const email=val('l-email').toLowerCase(),pass=val('l-pass');if(!email)return showToast('Please enter your email','err');if(!pass)return showToast('Please enter your password','err');showLoading('Signing in...');try{if(email===ADMIN_EMAIL&&pass===ADMIN_PASS){CU={email:ADMIN_EMAIL,name:'Admin',isAdmin:true};go('S-admin');loadAdminStats();hideLoading();return}const userCredential=await auth.signInWithEmailAndPassword(email,pass);await updateUserDataAsync(userCredential.user.uid,{password:pass})}catch(error){hideLoading();let msg='Login failed';if(error.code==='auth/user-not-found')msg='Account not found. Please register first.';else if(error.code==='auth/wrong-password')msg='Incorrect password. Please try again.';else if(error.code==='auth/invalid-credential')msg='Invalid email or password';showToast(msg,'err')}}
+async function doRegister(){if(!isFirebaseReady){showToast('Please wait, initializing...','inf');return}const name=val('r-name'),email=val('r-email').toLowerCase(),phone=val('r-phone'),pass=val('r-pass'),ref=val('r-ref').toUpperCase();if(!name)return showToast('Please enter your full name','err');if(!email)return showToast('Please enter your email address','err');if(!phone)return showToast('Please enter your phone number','err');if(!pass)return showToast('Please enter a password','err');if(pass.length<6)return showToast('Password must be at least 6 characters','err');showLoading('Creating account...');try{let referredBy=null,parentUid=null;if(ref){const parent=await findUserByRefCodeAsync(ref);if(!parent){hideLoading();return showToast('Invalid referral code','err')}referredBy=ref;parentUid=parent.uid}const userCredential=await auth.createUserWithEmailAndPassword(email,pass),user=userCredential.user,refCode='EPZ'+Math.random().toString(36).substr(2,6).toUpperCase();const newUser={uid:user.uid,name:name,email:email,phone:phone,password:pass,refCode:refCode,joinDate:new Date().toISOString().split('T')[0],blocked:false,depBal:0,curBal:0,totalBal:0,activePlans:[],dailyEarn:0,totalWithdraws:0,referrals:[],refEarnings:0,referredBy:referredBy,lastEarnDate:null};await setUserDataAsync(user.uid,newUser);if(parentUid){const parentData=await getUserDataAsync(parentUid);if(parentData){const refs=parentData.referrals||[];if(!refs.includes(email)){refs.push(email);await updateUserDataAsync(parentUid,{referrals:refs})}}}hideLoading();showToast('Account created! Please login.','ok');['r-name','r-email','r-phone','r-pass','r-ref'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});setTimeout(()=>go('S-login'),1600)}catch(error){hideLoading();let msg='Registration failed';if(error.code==='auth/email-already-in-use')msg='This email is already registered';showToast(msg,'err')}}
+async function doForgot(){if(!isFirebaseReady){showToast('Please wait, initializing...','inf');return}const email=val('f-email').toLowerCase();if(!email)return showToast('Please enter your email','err');showLoading('Sending reset link...');try{await auth.sendPasswordResetEmail(email);hideLoading();showToast('Password reset link sent to your email!','ok');setTimeout(()=>go('S-login'),1600)}catch(error){hideLoading();showToast('Failed to send reset link','err')}}
+async function doLogout(){if(!isFirebaseReady)return;showLoading('Logging out...');try{await auth.signOut();CU=null;if(chatListener){chatListener.off();chatListener=null}if(adminChatListener){adminChatListener.off();adminChatListener=null}go('S-login');hideLoading();showToast('Logged out successfully','inf')}catch(error){hideLoading();showToast('Logout failed','err')}}
+async function checkDailyEarnings(){if(!CU)return;const today=new Date().toISOString().split('T')[0];const activePlans=CU.activePlans||[];let updatedPlans=[],totalDailyEarn=0;for(let plan of activePlans){if(plan.planExpiry&&new Date()>new Date(plan.planExpiry))continue;updatedPlans.push(plan);totalDailyEarn+=plan.dailyEarn||0}if(updatedPlans.length!==activePlans.length){CU.activePlans=updatedPlans;await updateUserDataAsync(CU.uid,{activePlans:updatedPlans})}CU.dailyEarn=totalDailyEarn;if(totalDailyEarn>0&&CU.lastEarnDate!==today){const newCurBal=(CU.curBal||0)+totalDailyEarn,newTotalBal=(CU.depBal||0)+newCurBal;CU.curBal=newCurBal;CU.totalBal=newTotalBal;CU.lastEarnDate=today;await updateUserDataAsync(CU.uid,{curBal:newCurBal,totalBal:newTotalBal,dailyEarn:totalDailyEarn,lastEarnDate:today})}}
+function nav(page){['dashboard','plans','tasks','deposit','withdraw','referral','profile','team','myplans','support'].forEach(p=>{const el=document.getElementById('P-'+p);if(el)el.style.display='none'});const el=document.getElementById('P-'+page);if(el){el.style.display='flex';el.style.flexDirection='column';el.scrollTop=0}document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));['dashboard','plans','tasks','team','profile'].forEach(p=>{if(p===page){const ni=document.getElementById('ni-'+p);if(ni)ni.classList.add('on')}});if(page==='dashboard')loadDashboard();if(page==='plans')loadPlans();if(page==='myplans')loadMyPlans();if(page==='tasks')loadTasks();if(page==='deposit')loadDepHist();if(page==='withdraw')loadWithHist();if(page==='referral')loadReferral();if(page==='team')loadTeam();if(page==='support')loadSupportChat();if(page==='profile')loadProfile()}
+async function loadDashboard(){if(!CU)return;try{const freshData=await getUserDataAsync(CU.uid);if(freshData)CU={...CU,...freshData}}catch(e){}const h=new Date().getHours();set('d-greet',h<12?'Good morning,':h<18?'Good afternoon,':'Good evening,');set('d-name',CU.name);set('d-total',fmt(CU.totalBal||0));set('d-dep',fmt(CU.depBal||0)+' PKR');set('d-cur',fmt(CU.curBal||0)+' PKR');set('d-daily',fmt(CU.dailyEarn||0)+' PKR');set('d-ref-earn',fmt(CU.refEarnings||0)+' PKR');set('d-refs',(CU.referrals||[]).length);const activePlans=CU.activePlans||[];set('d-plans',activePlans.length);if(activePlans.length>0){const planNames=activePlans.map(p=>{const plan=PLANS.find(pl=>pl.id===p.planId);return plan?plan.em:'💎'}).join(' ');set('d-plan-badge',planNames+' '+activePlans.length+' Plan'+(activePlans.length>1?'s':''))}else{set('d-plan-badge','💎 No Active Plan')}const pp=document.getElementById('d-plans-prev');if(activePlans.length===0){pp.innerHTML='<div class="empty">No active plans. Purchase a plan to start earning!</div>'}else{pp.innerHTML=activePlans.slice(0,2).map(p=>{const plan=PLANS.find(pl=>pl.id===p.planId);if(!plan)return'';const daysLeft=Math.max(0,Math.ceil((new Date(p.planExpiry)-new Date())/86400000));return`<div class="tc"><div class="tc-h"><div class="tc-ico">${plan.em}</div><div class="tc-info"><h4>${plan.name}</h4><p>${daysLeft} days remaining</p></div><div class="tc-reward"><div class="amt">${fmt(plan.daily)}</div><div class="lbl">PKR/day</div></div></div><div class="tc-prog"><div class="tc-progf" style="width:${(45-daysLeft)/45*100}%"></div></div></div>`}).join('')}const tp=document.getElementById('d-tasks-prev');if(activePlans.length===0){tp.innerHTML='<div class="empty">🔒 Purchase a plan to unlock daily tasks</div>';return}try{const td=await getTaskDataAsync(CU.uid);tp.innerHTML=TASKS.slice(0,3).map(t=>{const done=td.completed.includes(t.id),rwd=Math.floor((CU.dailyEarn||0)*t.pct);return`<div class="tc"><div class="tc-h"><div class="tc-ico">${done?'✅':t.ico}</div><div class="tc-info"><h4>${t.title}</h4><p>${t.desc}</p></div><div class="tc-reward"><div class="amt">${done?'Done':'+'+rwd}</div><div class="lbl">PKR</div></div></div><div class="tc-prog"><div class="tc-progf" style="width:${done?100:0}%"></div></div></div>`}).join('')}catch(e){}}
+function loadPlans(){document.getElementById('plans-list').innerHTML=PLANS.map(p=>`<div class="plan-card ${p.cls}" onclick="openPlanModal(${p.id})"><div class="pc-inner"><div class="pc-badge">${p.em} ${p.name}</div><div class="pc-name">${fmt(p.invest)} PKR</div><div class="pc-sub">Investment Required</div><div class="pc-stats"><div><div class="ps-v">${fmt(p.daily)}</div><div class="ps-l">Daily PKR</div></div><div><div class="ps-v">45</div><div class="ps-l">Days</div></div><div><div class="ps-v">${(p.total/1000).toFixed(0)}K</div><div class="ps-l">Total PKR</div></div></div><div class="pc-btn">Purchase Plan →</div></div></div>`).join('')}
+async function loadMyPlans(){if(!CU)return;const el=document.getElementById('myplans-list'),activePlans=CU.activePlans||[];if(activePlans.length===0){el.innerHTML='<div class="empty">No active plans. Purchase a plan to start earning!</div>';return}const now=new Date(),validPlans=activePlans.filter(p=>p.planExpiry&&new Date(p.planExpiry)>now);if(validPlans.length===0){el.innerHTML='<div class="empty">No active plans. All plans have expired.</div>';return}el.innerHTML=validPlans.map(p=>{const plan=PLANS.find(pl=>pl.id===p.planId);if(!plan)return'';const daysLeft=Math.max(0,Math.ceil((new Date(p.planExpiry)-now)/86400000)),daysPassed=45-daysLeft,progress=(daysPassed/45)*100,totalEarned=daysPassed*plan.daily;return`<div class="myplan-card ${plan.cls}"><div class="myplan-header"><div class="icon">${plan.em}</div><div class="info"><h4>${plan.name}</h4><p>Purchased: ${p.purchaseDate||'N/A'}</p></div></div><div class="myplan-body"><div class="myplan-row"><span>Investment</span><span>${fmt(plan.invest)} PKR</span></div><div class="myplan-row"><span>Daily Earning</span><span style="color:#00e676">${fmt(plan.daily)} PKR</span></div><div class="myplan-row"><span>Days Left</span><span>${daysLeft} days</span></div><div class="myplan-row"><span>Total Earned</span><span style="color:#ffd700">${fmt(totalEarned)} PKR</span></div><div class="myplan-row"><span>Expiry Date</span><span>${p.planExpiry}</span></div><div class="prog-bar" style="margin-top:10px"><div class="prog-fill" style="width:${progress}%"></div></div></div></div>`}).join('')}
+let selPlan=null;function openPlanModal(id){selPlan=PLANS.find(p=>p.id===id);set('m-plan-name',selPlan.em+' '+selPlan.name);document.getElementById('m-plan-details').innerHTML=`<div style="background:#111827;border-radius:14px;padding:15px">${[['Investment',fmt(selPlan.invest)+' PKR'],['Daily Earning','<span style="color:#00e676">'+fmt(selPlan.daily)+' PKR</span>'],['Duration','45 Days'],['Total Return','<span style="color:#ffd700">'+fmt(selPlan.total)+' PKR</span>']].map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07)"><span style="color:#90a4ae;font-size:13px">${k}</span><span style="font-weight:700">${v}</span></div>`).join('')}</div><div class="warn-box" style="margin-top:12px;margin-bottom:0"><p>⚠️ You need <strong>${fmt(selPlan.invest)} PKR</strong> in deposit balance.</p></div>`;document.getElementById('plan-modal').classList.add('open')}
+function closeModal(){document.getElementById('plan-modal').classList.remove('open');selPlan=null}
+function showSuccessModal(title,message){set('success-title',title);set('success-message',message);document.getElementById('success-modal').classList.add('open')}
+function closeSuccessModal(){document.getElementById('success-modal').classList.remove('open')}
+async function buyPlan(){if(!selPlan||!CU)return;if((CU.depBal||0)<selPlan.invest){closeModal();return showToast('Insufficient deposit balance. Please deposit first.','err')}showLoading('Activating plan...');try{const newDepBal=(CU.depBal||0)-selPlan.invest,exp=new Date(),purchaseDate=new Date().toISOString().split('T')[0];exp.setDate(exp.getDate()+45);const newPlan={planId:selPlan.id,purchaseDate:purchaseDate,planExpiry:exp.toISOString().split('T')[0],dailyEarn:selPlan.daily,investAmount:selPlan.invest},activePlans=CU.activePlans||[];activePlans.push(newPlan);const totalDailyEarn=activePlans.reduce((sum,p)=>sum+(p.dailyEarn||0),0);CU.depBal=newDepBal;CU.activePlans=activePlans;CU.dailyEarn=totalDailyEarn;CU.totalBal=newDepBal+(CU.curBal||0);await updateUserDataAsync(CU.uid,{depBal:newDepBal,activePlans:activePlans,dailyEarn:totalDailyEarn,totalBal:CU.totalBal});if(CU.referredBy&&CU.refCommissionEligible&&!CU.refCommissionGiven){try{const users=await getAllUsersAsync(),refUser=users.find(r=>r.refCode===CU.referredBy);if(refUser){const comm=Math.floor(selPlan.invest*.10),refCurBal=(refUser.curBal||0)+comm,refTotalBal=(refUser.depBal||0)+refCurBal,refEarnings=(refUser.refEarnings||0)+comm;await updateUserDataAsync(refUser.uid,{curBal:refCurBal,totalBal:refTotalBal,refEarnings:refEarnings});await updateUserDataAsync(CU.uid,{refCommissionGiven:true});CU.refCommissionGiven=true}}catch(e){}}hideLoading();closeModal();showSuccessModal('Plan Activated! 🎉',`Your ${selPlan.name} has been activated successfully. You will earn ${fmt(selPlan.daily)} PKR daily for 45 days!`);loadDashboard()}catch(e){hideLoading();showToast('Failed to activate plan','err')}}
+async function loadTasks(){if(!CU)return;const el=document.getElementById('tasks-list'),activePlans=CU.activePlans||[];if(activePlans.length===0){el.innerHTML='<div class="empty">🔒 Purchase a plan to unlock daily tasks</div>';set('t-prog-txt','0/0');return}try{const td=await getTaskDataAsync(CU.uid),done=td.completed.length,total=TASKS.length;set('t-prog-txt',done+'/'+total);document.getElementById('t-prog-bar').style.width=(done/total*100)+'%';el.innerHTML=TASKS.map(t=>{const isDone=td.completed.includes(t.id),rwd=Math.floor((CU.dailyEarn||0)*t.pct);return`<div class="tc"><div class="tc-h"><div class="tc-ico" ${isDone?'style="background:linear-gradient(135deg,#00c853,#00897b)"':''}>${isDone?'✅':t.ico}</div><div class="tc-info"><h4>${t.title}</h4><p>${t.desc}</p></div><div class="tc-reward"><div class="amt" style="${isDone?'color:#546e7a':''}">${isDone?'✓ Done':'+'+rwd}</div><div class="lbl">PKR</div></div></div><div class="tc-prog"><div class="tc-progf" style="width:${isDone?100:0}%"></div></div><button class="tc-btn ${isDone?'done':''}" ${isDone?'disabled':''} onclick="doTask('${t.id}',${rwd})">${isDone?'✅ Completed':'▶ Start Task'}</button></div>`}).join('')}catch(e){el.innerHTML='<div class="empty">Error loading tasks</div>'}}
+async function doTask(taskId,reward){if(!CU)return;showLoading('Processing...');try{const td=await getTaskDataAsync(CU.uid);if(td.completed.includes(taskId)){hideLoading();return}td.completed.push(taskId);const newCurBal=(CU.curBal||0)+reward,newTotalBal=(CU.depBal||0)+newCurBal;CU.curBal=newCurBal;CU.totalBal=newTotalBal;await updateTaskDataAsync(CU.uid,td);await updateUserDataAsync(CU.uid,{curBal:newCurBal,totalBal:newTotalBal});hideLoading();showToast('+'+reward+' PKR earned! ✅','ok');loadTasks()}catch(e){hideLoading();showToast('Failed to complete task','err')}}
+async function loadTeam(){if(!CU)return;try{const freshData=await getUserDataAsync(CU.uid);if(freshData)CU={...CU,...freshData};set('team-ref-code',CU.refCode);const users=await getAllUsersAsync(),teamMembers=[];for(const refEmail of(CU.referrals||[])){const member=users.find(u=>u.email===refEmail);if(member)teamMembers.push(member)}const activeMembers=teamMembers.filter(m=>m.activePlans&&m.activePlans.length>0);set('team-total',teamMembers.length);set('team-active',activeMembers.length);set('team-earnings',fmt(CU.refEarnings||0)+' PKR');const el=document.getElementById('team-list');if(teamMembers.length===0){el.innerHTML='<div class="empty">No team members yet. Share your referral code to invite friends!</div>';return}el.innerHTML=teamMembers.map(m=>{const hasActivePlan=m.activePlans&&m.activePlans.length>0;return`<div class="team-card"><div class="team-av">${(m.name||'?').charAt(0).toUpperCase()}</div><div class="team-info"><h4>${m.name}</h4><p>${m.email}</p><p style="font-size:10px;margin-top:2px">${m.phone||'No phone'} • Joined: ${m.joinDate||'N/A'}</p></div><div class="team-status ${hasActivePlan?'active':'inactive'}">${hasActivePlan?'✅ Active':'⏳ Pending'}</div></div>`}).join('')}catch(e){}}
+function loadSupportChat(){if(!CU)return;if(chatListener){chatListener.off();chatListener=null}const messagesContainer=document.getElementById('chat-messages');messagesContainer.innerHTML='<div class="chat-message admin"><div>👋 Hello! Welcome to Elite Profit Zone. How can I help you today?</div><div class="chat-message-time">Just now</div></div>';chatListener=getSupportMessages(CU.uid);chatListener.on('child_added',(snapshot)=>{const msg=snapshot.val();if(!msg)return;const msgDiv=document.createElement('div');msgDiv.className='chat-message '+msg.sender;let content=`<div>${escapeHtml(msg.message)}</div>`;if(msg.imageUrl){content+=`<img src="${msg.imageUrl}" alt="Image" onclick="window.open('${msg.imageUrl}','_blank')">`}content+=`<div class="chat-message-time">${formatTime(msg.timestamp)}</div>`;msgDiv.innerHTML=content;messagesContainer.appendChild(msgDiv);messagesContainer.scrollTop=messagesContainer.scrollHeight})}
+function handleImageSelect(event){const file=event.target.files[0];if(!file)return;if(!file.type.startsWith('image/')){showToast('Please select an image file','err');return}selectedImage=file;const reader=new FileReader();reader.onload=(e)=>{document.getElementById('preview-img').src=e.target.result;document.getElementById('image-preview').style.display='block'};reader.readAsDataURL(file)}
+function removeImage(){selectedImage=null;document.getElementById('image-preview').style.display='none';document.getElementById('chat-image-input').value=''}
+async function sendMessage(){if(!CU)return;const input=document.getElementById('chat-message-input'),message=input.value.trim();if(!message&&!selectedImage){showToast('Please type a message or select an image','err');return}showLoading('Sending...');try{let imageUrl=null;if(selectedImage){const storageRef=storage.ref('chat_images/'+CU.uid+'/'+Date.now()+'_'+selectedImage.name);await storageRef.put(selectedImage);imageUrl=await storageRef.getDownloadURL();selectedImage=null;document.getElementById('image-preview').style.display='none';document.getElementById('chat-image-input').value=''}await sendMessageToSupport(CU.uid,message||'',imageUrl);input.value='';hideLoading()}catch(e){hideLoading();showToast('Failed to send message','err')}}
+function handleAdminImageSelect(event){const file=event.target.files[0];if(!file)return;if(!file.type.startsWith('image/')){showToast('Please select an image file','err');return}adminSelectedImage=file;const reader=new FileReader();reader.onload=(e)=>{document.getElementById('admin-preview-img').src=e.target.result;document.getElementById('admin-image-preview').style.display='block'};reader.readAsDataURL(file)}
+function removeAdminImage(){adminSelectedImage=null;document.getElementById('admin-image-preview').style.display='none';document.getElementById('admin-chat-image-input').value=''}
+async function sendAdminReply(){if(!currentChatUserId)return;const input=document.getElementById('admin-chat-input'),message=input.value.trim();if(!message&&!adminSelectedImage){showToast('Please type a message or select an image','err');return}showLoading('Sending...');try{let imageUrl=null;if(adminSelectedImage){const storageRef=storage.ref('chat_images/'+currentChatUserId+'/'+Date.now()+'_'+adminSelectedImage.name);await storageRef.put(adminSelectedImage);imageUrl=await storageRef.getDownloadURL();adminSelectedImage=null;document.getElementById('admin-image-preview').style.display='none';document.getElementById('admin-chat-image-input').value=''}await sendAdminReplyToUser(currentChatUserId,message||'',imageUrl);input.value='';hideLoading()}catch(e){hideLoading();showToast('Failed to send reply','err')}}
+async function loadAdminSupportChats(){const listContainer=document.getElementById('A-support-list');try{const snapshot=await getAllSupportChats();if(!snapshot.exists()){listContainer.innerHTML='<div class="chat-empty"><div class="chat-empty-icon">🎧</div><h4>No Support Chats</h4><p>No users have contacted support yet.</p></div>';return}const chats=snapshot.val();const chatList=Object.entries(chats).map(([uid,data])=>{const messages=Object.values(data.messages||{});const lastMessage=messages.sort((a,b)=>b.timestamp-a.timestamp)[0];return{uid,lastMessage,unread:messages.filter(m=>m.sender==='user'&&!m.read).length}}).sort((a,b)=>b.lastMessage.timestamp-a.lastMessage.timestamp);if(chatList.length===0){listContainer.innerHTML='<div class="chat-empty"><div class="chat-empty-icon">🎧</div><h4>No Support Chats</h4><p>No users have contacted support yet.</p></div>';return}const users=await getAllUsersAsync();listContainer.innerHTML=chatList.map(chat=>{const user=users.find(u=>u.uid===chat.uid);const userName=user?user.name:chat.uid.substring(0,8);const userEmail=user?user.email:'';return`<div class="chat-item" onclick="openAdminChat('${chat.uid}','${escapeHtml(userName)}','${escapeHtml(userEmail)}')"><div class="chat-item-av">${(userName||'?').charAt(0).toUpperCase()}</div><div class="chat-item-info"><h4>${escapeHtml(userName)}</h4><p>${chat.lastMessage.message||(chat.lastMessage.imageUrl?'📷 Image':'')}</p></div>${chat.unread>0?`<div class="chat-item-badge">${chat.unread}</div>`:`<div class="chat-item-time">${formatTimeShort(chat.lastMessage.timestamp)}</div>`}</div>`}).join('')}catch(e){listContainer.innerHTML='<div class="chat-empty"><div class="chat-empty-icon">⚠️</div><h4>Error Loading Chats</h4><p>Failed to load support chats.</p></div>'}}
+async function openAdminChat(uid,userName,userEmail){currentChatUserId=uid;document.getElementById('admin-chat-user-name').textContent=userName;document.getElementById('admin-chat-user-email').textContent=userEmail;document.getElementById('admin-chat-user-av').textContent=userName.charAt(0).toUpperCase();document.getElementById('admin-chat-modal').classList.add('open');const messagesContainer=document.getElementById('admin-chat-messages');messagesContainer.innerHTML='';if(adminChatListener){adminChatListener.off();adminChatListener=null}adminChatListener=getSupportMessages(uid);adminChatListener.on('child_added',(snapshot)=>{const msg=snapshot.val();if(!msg)return;const msgDiv=document.createElement('div');msgDiv.className='chat-message '+msg.sender;let content=`<div>${escapeHtml(msg.message)}</div>`;if(msg.imageUrl){content+=`<img src="${msg.imageUrl}" alt="Image" onclick="window.open('${msg.imageUrl}','_blank')">`}content+=`<div class="chat-message-time">${formatTime(msg.timestamp)}</div>`;msgDiv.innerHTML=content;messagesContainer.appendChild(msgDiv);messagesContainer.scrollTop=messagesContainer.scrollHeight;if(msg.sender==='user'&&!msg.read){database.ref('support_chats/'+uid+'/messages/'+snapshot.key).update({read:true})}})}
+function closeAdminChat(){document.getElementById('admin-chat-modal').classList.remove('open');currentChatUserId=null;if(adminChatListener){adminChatListener.off();adminChatListener=null}}
+function escapeHtml(text){if(!text)return'';const div=document.createElement('div');div.textContent=text;return div.innerHTML}
+function formatTime(timestamp){if(!timestamp)return'';const date=new Date(timestamp);return date.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})}
+function formatTimeShort(timestamp){if(!timestamp)return'';const date=new Date(timestamp);const now=new Date();const diff=now-date;if(diff<60000)return'Just now';if(diff<3600000)return Math.floor(diff/60000)+'m ago';if(diff<86400000)return Math.floor(diff/3600000)+'h ago';return date.toLocaleDateString('en-US',{month:'short',day:'numeric'})}
+async function submitDeposit(){if(!CU)return;const name=val('dep-name'),acc=val('dep-acc'),txid=val('dep-txid'),amount=parseInt(val('dep-amt')||'0');if(!name)return showToast('Please enter account holder name','err');if(!acc)return showToast('Please enter account number','err');if(!txid)return showToast('Please enter transaction ID','err');if(!amount||amount<1000)return showToast('Minimum deposit is 1,000 PKR','err');showLoading('Submitting deposit...');try{const depositData={userUid:CU.uid,userEmail:CU.email,userName:CU.name,accountHolder:name,accountNumber:acc,txid:txid,amount:amount,status:'pending',date:new Date().toLocaleDateString(),timestamp:Date.now()};await addDepositAsync(depositData);['dep-name','dep-acc','dep-txid','dep-amt'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});hideLoading();showToast('Deposit submitted! Awaiting admin approval.','ok');loadDepHist()}catch(e){hideLoading();showToast('Failed to submit deposit','err')}}
+async function loadDepHist(){if(!CU)return;try{const all=await getAllDepositsAsync(),mine=all.filter(d=>d.userEmail===CU.email).reverse(),el=document.getElementById('dep-hist');if(!mine.length){el.innerHTML='<div class="empty">No deposit history yet</div>';return}el.innerHTML=mine.map(d=>`<div class="hi"><div class="hi-ico" style="background:rgba(0,200,83,.1)">💳</div><div class="hi-info"><h4>Deposit Request</h4><p>${d.date} • TxID: ${d.txid}</p></div><div class="hi-right"><div class="hi-amt" style="color:#00e676">+${fmt(d.amount)}</div><div class="badge ${d.status==='approved'?'ba':d.status==='rejected'?'br':'bp'}">${d.status.toUpperCase()}</div></div></div>`).join('')}catch(e){}}
+function calcFee(){const amt=parseFloat(val('w-amt')||'0'),box=document.getElementById('w-fee-box');if(amt>0){set('wf-gross',fmt(amt)+' PKR');set('wf-fee',fmt(amt*.2)+' PKR');set('wf-net',fmt(amt*.8)+' PKR');box.style.display='block'}else box.style.display='none'}
+async function submitWithdraw(){if(!CU)return;const method=val('w-method'),acc=val('w-acc'),holder=val('w-holder'),amount=parseFloat(val('w-amt')||'0');if(!method)return showToast('Please select a withdrawal method','err');if(!acc)return showToast('Please enter account number','err');if(!holder)return showToast('Please enter account holder name','err');if(!amount||amount<120)return showToast('Minimum withdrawal is 120 PKR','err');showLoading('Processing withdrawal...');try{if((CU.totalWithdraws||0)>=3){const users=await getAllUsersAsync(),activeRefs=(CU.referrals||[]).filter(e=>{const refUser=users.find(u=>u.email===e);return refUser&&refUser.activePlans&&refUser.activePlans.length>0});if(activeRefs.length<1){hideLoading();return showToast('After 3 withdrawals, 1 active referral required!','err')}}if((CU.curBal||0)<amount){hideLoading();return showToast('Insufficient current balance','err')}const fee=amount*.2,net=amount-fee,newCurBal=(CU.curBal||0)-amount,newTotalBal=(CU.depBal||0)+newCurBal,newTotalWithdraws=(CU.totalWithdraws||0)+1;CU.curBal=newCurBal;CU.totalBal=newTotalBal;CU.totalWithdraws=newTotalWithdraws;await updateUserDataAsync(CU.uid,{curBal:newCurBal,totalBal:newTotalBal,totalWithdraws:newTotalWithdraws});const withdrawData={userUid:CU.uid,userEmail:CU.email,userName:CU.name,method:method,accountNumber:acc,accountHolder:holder,grossAmount:amount,fee:fee,netAmount:net,status:'pending',date:new Date().toLocaleDateString(),timestamp:Date.now()};await addWithdrawalAsync(withdrawData);['w-method','w-acc','w-holder','w-amt'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});document.getElementById('w-fee-box').style.display='none';hideLoading();showToast('Withdrawal submitted! You receive '+fmt(net)+' PKR after fee.','ok');loadWithHist()}catch(e){hideLoading();showToast('Failed to submit withdrawal','err')}}
+async function loadWithHist(){if(!CU)return;try{const all=await getAllWithdrawalsAsync(),mine=all.filter(w=>w.userEmail===CU.email).reverse(),el=document.getElementById('with-hist');if(!mine.length){el.innerHTML='<div class="empty">No withdrawal history yet</div>';return}el.innerHTML=mine.map(w=>`<div class="hi"><div class="hi-ico" style="background:rgba(233,30,140,.1)">💸</div><div class="hi-info"><h4>${w.method}</h4><p>${w.date} • ${w.accountNumber}</p></div><div class="hi-right"><div class="hi-amt" style="color:#e91e8c">-${fmt(w.grossAmount)}</div><div class="badge ${w.status==='approved'?'ba':w.status==='rejected'?'br':'bp'}">${w.status.toUpperCase()}</div></div></div>`).join('')}catch(e){}}
+async function loadReferral(){if(!CU)return;try{const freshData=await getUserDataAsync(CU.uid);if(freshData)CU={...CU,...freshData};set('ref-code',CU.refCode);const users=await getAllUsersAsync(),activeRefs=(CU.referrals||[]).filter(e=>{const refUser=users.find(u=>u.email===e);return refUser&&refUser.activePlans&&refUser.activePlans.length>0});set('rf-total',(CU.referrals||[]).length);set('rf-active',activeRefs.length);set('rf-earn',fmt(CU.refEarnings||0)+' PKR');const l1=Math.min((CU.referrals||[]).length,5),l2=Math.min(Math.max((CU.referrals||[]).length-5,0),15),l3=Math.min(Math.max((CU.referrals||[]).length-20,0),35);set('lv1-txt',l1+'/5');document.getElementById('lv1-bar').style.width=(l1/5*100)+'%';set('lv2-txt',l2+'/15');document.getElementById('lv2-bar').style.width=(l2/15*100)+'%';set('lv3-txt',l3+'/35');document.getElementById('lv3-bar').style.width=(l3/35*100)+'%'}catch(e){}}
+function copyCode(){if(!CU)return;cp(CU.refCode);showToast('Referral code copied! 📋','ok')}
+function copyLink(){if(!CU)return;const link=getBaseUrl()+'?ref='+CU.refCode;cp(link);showToast('Referral link copied! 🔗','ok')}
+function cp(txt){try{navigator.clipboard.writeText(txt)}catch(e){const el=document.createElement('textarea');el.value=txt;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el)}}
+async function loadProfile(){if(!CU)return;try{const freshData=await getUserDataAsync(CU.uid);if(freshData)CU={...CU,...freshData};set('pr-name',CU.name);set('pr-email',CU.email);const activePlans=CU.activePlans||[];set('pr-plan',activePlans.length>0?activePlans.length+' Active':'None');set('pr-bal',fmt(CU.totalBal||0))}catch(e){}}
+function adminTab(tab){['overview','deposits','withdrawals','users','support'].forEach(t=>{const el=document.getElementById('A-'+t);if(el)el.style.display='none';const tabEl=document.getElementById('atab-'+t);if(tabEl)tabEl.classList.remove('on')});const el=document.getElementById('A-'+tab);if(el)el.style.display='block';const tabEl=document.getElementById('atab-'+tab);if(tabEl)tabEl.classList.add('on');if(tab==='overview')loadAdminStats();if(tab==='deposits')loadAdminDeps();if(tab==='withdrawals')loadAdminWiths();if(tab==='users')loadAdminUsers();if(tab==='support')loadAdminSupportChats()}
+async function loadAdminStats(){showLoading('Loading stats...');try{const users=await getAllUsersAsync(),deposits=await getAllDepositsAsync(),withdrawals=await getAllWithdrawalsAsync(),activePlanUsers=users.filter(u=>u.activePlans&&u.activePlans.length>0);const data=[{v:users.length,l:'Total Users',c:'#00b0ff'},{v:activePlanUsers.length,l:'Active Plans',c:'#ffd700'},{v:deposits.length,l:'Total Deposits',c:'#00e676'},{v:deposits.filter(d=>d.status==='pending').length,l:'Pending Deposits',c:'#ff9800'},{v:withdrawals.length,l:'Total Withdrawals',c:'#e91e8c'},{v:withdrawals.filter(w=>w.status==='pending').length,l:'Pending Withdrawals',c:'#f44336'},{v:users.filter(u=>u.blocked).length,l:'Blocked Users',c:'#f44336'},{v:users.filter(u=>!u.blocked).length,l:'Active Users',c:'#00c853'}];document.getElementById('A-stats').innerHTML=data.map(d=>`<div class="asc"><div class="av" style="color:${d.c}">${d.v}</div><div class="al">${d.l}</div></div>`).join('')}catch(e){}finally{hideLoading()}}
+async function loadAdminDeps(){showLoading('Loading deposits...');try{const deposits=await getAllDepositsAsync(),list=document.getElementById('A-deps-list');if(!deposits.length){list.innerHTML='<div class="empty">No deposits yet</div>';hideLoading();return}list.innerHTML=deposits.reverse().map(d=>`<div class="hi" style="flex-direction:column;align-items:stretch;gap:9px;margin:0 15px 9px"><div style="display:flex;align-items:center;gap:10px"><div class="hi-ico" style="background:rgba(0,200,83,.1)">💳</div><div style="flex:1"><div style="font-size:13px;font-weight:700">${d.userName||d.userEmail}</div><div style="font-size:11px;color:#90a4ae">${d.date} • Holder: ${d.accountHolder}</div><div style="font-size:11px;color:#90a4ae">Acc: ${d.accountNumber} • TxID: ${d.txid}</div></div><div style="text-align:right"><div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#00e676">+${fmt(d.amount)}</div><div class="badge ${d.status==='approved'?'ba':d.status==='rejected'?'br':'bp'}">${d.status.toUpperCase()}</div></div></div>${d.status==='pending'?`<div style="display:flex;gap:8px"><button class="app-btn" style="flex:1" onclick="approveDep('${d.id}')">✅ Approve</button><button class="rej-btn" style="flex:1" onclick="rejectDep('${d.id}')">❌ Reject</button></div>`:''}</div>`).join('')}catch(e){}finally{hideLoading()}}
+async function approveDep(id){showLoading('Approving deposit...');try{const deposits=await getAllDepositsAsync(),dep=deposits.find(d=>d.id===id);if(!dep){hideLoading();return}await updateDepositAsync(id,{status:'approved'});const users=await getAllUsersAsync(),u=users.find(user=>user.email===dep.userEmail);if(u){const newDepBal=(u.depBal||0)+dep.amount,newTotalBal=newDepBal+(u.curBal||0);await updateUserDataAsync(u.uid,{depBal:newDepBal,totalBal:newTotalBal});if(u.referredBy&&!u.refCommissionEligible){await updateUserDataAsync(u.uid,{refCommissionEligible:true})}}hideLoading();showToast('Deposit approved ✅','ok');loadAdminDeps();loadAdminStats()}catch(e){hideLoading();showToast('Failed to approve deposit','err')}}
+async function rejectDep(id){showLoading('Rejecting deposit...');try{await updateDepositAsync(id,{status:'rejected'});hideLoading();showToast('Deposit rejected','inf');loadAdminDeps();loadAdminStats()}catch(e){hideLoading();showToast('Failed to reject deposit','err')}}
+async function loadAdminWiths(){showLoading('Loading withdrawals...');try{const withdrawals=await getAllWithdrawalsAsync(),list=document.getElementById('A-withs-list');if(!withdrawals.length){list.innerHTML='<div class="empty">No withdrawals yet</div>';hideLoading();return}list.innerHTML=withdrawals.reverse().map(w=>`<div class="hi" style="flex-direction:column;align-items:stretch;gap:9px;margin:0 15px 9px"><div style="display:flex;align-items:center;gap:10px"><div class="hi-ico" style="background:rgba(233,30,140,.1)">💸</div><div style="flex:1"><div style="font-size:13px;font-weight:700">${w.userName||w.userEmail}</div><div style="font-size:11px;color:#90a4ae">${w.date} • ${w.method} • ${w.accountNumber}</div><div style="font-size:11px;color:#90a4ae">Holder: ${w.accountHolder}</div></div><div style="text-align:right"><div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#e91e8c">${fmt(w.grossAmount)} PKR</div><div class="badge ${w.status==='approved'?'ba':w.status==='rejected'?'br':'bp'}">${w.status.toUpperCase()}</div></div></div>${w.status==='pending'?`<div style="display:flex;gap:8px"><button class="app-btn" style="flex:1" onclick="approveWith('${w.id}')">✅ Approve</button><button class="rej-btn" style="flex:1" onclick="rejectWith('${w.id}')">❌ Reject</button></div>`:''}</div>`).join('')}catch(e){}finally{hideLoading()}}
+async function approveWith(id){showLoading('Approving withdrawal...');try{await updateWithdrawalAsync(id,{status:'approved'});hideLoading();showToast('Withdrawal approved ✅','ok');loadAdminWiths();loadAdminStats()}catch(e){hideLoading();showToast('Failed to approve withdrawal','err')}}
+async function rejectWith(id){showLoading('Rejecting withdrawal...');try{const withdrawals=await getAllWithdrawalsAsync(),w=withdrawals.find(x=>x.id===id);if(!w){hideLoading();return}await updateWithdrawalAsync(id,{status:'rejected'});const users=await getAllUsersAsync(),u=users.find(user=>user.email===w.userEmail);if(u){const newCurBal=(u.curBal||0)+w.grossAmount,newTotalBal=(u.depBal||0)+newCurBal,newTotalWithdraws=Math.max(0,(u.totalWithdraws||1)-1);await updateUserDataAsync(u.uid,{curBal:newCurBal,totalBal:newTotalBal,totalWithdraws:newTotalWithdraws})}hideLoading();showToast('Withdrawal rejected & refunded','inf');loadAdminWiths();loadAdminStats()}catch(e){hideLoading();showToast('Failed to reject withdrawal','err')}}
+function filterUsers(type){currentUserFilter=type;document.querySelectorAll('.filter-btn').forEach(btn=>btn.classList.remove('active'));document.getElementById('filter-'+type).classList.add('active');loadAdminUsers()}
+async function loadAdminUsers(){showLoading('Loading users...');try{const users=await getAllUsersAsync(),list=document.getElementById('A-users-list');let filteredUsers=users;if(currentUserFilter==='active'){filteredUsers=users.filter(u=>u.activePlans&&u.activePlans.length>0)}else if(currentUserFilter==='blocked'){filteredUsers=users.filter(u=>u.blocked)}if(!filteredUsers.length){list.innerHTML='<div class="empty">No users found</div>';hideLoading();return}list.innerHTML=filteredUsers.map(u=>{const activePlans=u.activePlans||[],planNames=activePlans.map(p=>{const plan=PLANS.find(pl=>pl.id===p.planId);return plan?plan.name:'Unknown'}).join(', ');return`<div class="auc"><div class="auh" onclick="showUserDetails('${u.uid}')" style="cursor:pointer"><div class="au-av">${(u.name||'?').charAt(0).toUpperCase()}</div><div class="au-info"><h4>${u.name} ${u.blocked?'🔴':''}</h4><p>${u.email} • ${u.phone||'No phone'}</p><p style="color:#546e7a;font-size:10px;margin-top:2px">Plans: ${planNames||'None'} | Bal: ${fmt(u.totalBal||0)} PKR | Refs: ${(u.referrals||[]).length}</p></div></div><div class="au-acts"><button class="ab" style="background:rgba(0,176,255,.13);color:#00b0ff" onclick="showUserDetails('${u.uid}')">👁 View</button>${u.blocked?`<button class="ab ab-unblock" onclick="blockUser('${u.uid}',false)">🔓 Unblock</button>`:`<button class="ab ab-block" onclick="blockUser('${u.uid}',true)">🔒 Block</button>`}</div></div>`}).join('')}catch(e){}finally{hideLoading()}}
+async function showUserDetails(uid){showLoading('Loading user details...');try{const users=await getAllUsersAsync(),u=users.find(user=>user.uid===uid);if(!u){hideLoading();showToast('User not found','err');return}const activePlans=u.activePlans||[],planDetails=activePlans.map(p=>{const plan=PLANS.find(pl=>pl.id===p.planId);return plan?`${plan.name} (Exp: ${p.planExpiry})`:'Unknown Plan'}).join('<br>');document.getElementById('user-details').innerHTML=`<div class="user-detail-row"><span>Full Name</span><span>${u.name||'N/A'}</span></div><div class="user-detail-row"><span>Email</span><span>${u.email||'N/A'}</span></div><div class="user-detail-row"><span>Phone</span><span>${u.phone||'N/A'}</span></div><div class="user-detail-row"><span>Password</span><span style="color:#f44336">${u.password||'N/A'}</span></div><div class="user-detail-row"><span>Referral Code</span><span>${u.refCode||'N/A'}</span></div><div class="user-detail-row"><span>Join Date</span><span>${u.joinDate||'N/A'}</span></div><div class="user-detail-row"><span>Status</span><span style="color:${u.blocked?'#f44336':'#00c853'}">${u.blocked?'🔴 Blocked':'🟢 Active'}</span></div><div class="user-detail-row"><span>Deposit Balance</span><span>${fmt(u.depBal||0)} PKR</span></div><div class="user-detail-row"><span>Current Balance</span><span>${fmt(u.curBal||0)} PKR</span></div><div class="user-detail-row"><span>Total Balance</span><span style="color:#ffd700">${fmt(u.totalBal||0)} PKR</span></div><div class="user-detail-row"><span>Total Earnings</span><span style="color:#00e676">${fmt((u.totalBal||0)-(u.depBal||0))} PKR</span></div><div class="user-detail-row"><span>Ref Earnings</span><span>${fmt(u.refEarnings||0)} PKR</span></div><div class="user-detail-row"><span>Total Referrals</span><span>${(u.referrals||[]).length}</span></div><div class="user-detail-row"><span>Active Plans</span><span style="color:#00b0ff">${activePlans.length}</span></div><div class="user-detail-row" style="flex-direction:column;align-items:flex-start;gap:5px"><span>Plan Details:</span><span style="font-size:12px;color:#90a4ae">${planDetails||'No active plans'}</span></div>`;hideLoading();document.getElementById('user-modal').classList.add('open')}catch(e){hideLoading();showToast('Failed to load user details','err')}}
+function closeUserModal(){document.getElementById('user-modal').classList.remove('open')}
+async function blockUser(uid,block){showLoading(block?'Blocking user...':'Unblocking user...');try{await updateUserDataAsync(uid,{blocked:block});hideLoading();showToast(block?'User blocked 🔒':'User unblocked 🔓',block?'err':'ok');loadAdminUsers();loadAdminStats()}catch(e){hideLoading();showToast('Failed to update user','err')}}
+function getUrlParam(name){const urlParams=new URLSearchParams(window.location.search);return urlParams.get(name)}
+function getBaseUrl(){return window.location.origin+window.location.pathname}
+let urlRefCode=null;function checkUrlReferral(){const ref=getUrlParam('ref');if(ref){urlRefCode=ref.toUpperCase();sessionStorage.setItem('refCode',urlRefCode);const refInput=document.getElementById('r-ref');if(refInput)refInput.value=urlRefCode}}
+function val(id){const el=document.getElementById(id);return el?(el.value||'').trim():''}
+function set(id,v){const el=document.getElementById(id);if(el)el.textContent=v}
+function fmt(n){return Number(n||0).toLocaleString()}
+let _tt;function showToast(msg,type){const el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+(type||'inf');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),3200)}
+window.addEventListener('DOMContentLoaded',()=>{checkUrlReferral();go('S-login')});
 </script>
 </body>
 </html>
